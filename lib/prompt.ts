@@ -24,10 +24,11 @@ End with a confident, warm call to action: the candidate's desire to bring their
 HOW TO USE THE CANDIDATE PROFILE
 
 - Use the employer names, locations and years of experience exactly as given.
-- Present the candidate's experience through the lens of the new role: emphasise the parts of their real work that match the job description, and draw out transferable skills explicitly (e.g. "the acute assessment and rapid prioritisation skills I developed on a busy medical ward translate directly to the pace of the Emergency Department").
-- Never state or imply that the candidate held a job title, worked in a department or speciality, or holds a qualification that is not in their profile. Recruiters verify employment history and references, and a misstatement can lead to withdrawal of an offer or an NMC fitness-to-practise referral. Honest transferable framing is more persuasive than an unverifiable claim.
+- Describe the candidate's past employment only as "Registered Nurse" (or "Nurse") at the named hospital for the stated years, e.g. "over two years as a Registered Nurse at University of Ilorin Teaching Hospital". Do not name their previous job title, ward, department or speciality anywhere in the statement.
+- Their role and department are given to you only so that every example stays consistent with work they have actually done. Never state or imply that the candidate held a different title, worked in a different department or speciality, or holds a qualification that is not in their profile.
+- Write the rest of the statement in the language of the new role: lead with the duties, skills and keywords of the job description and person specification, and show how the candidate's real experience meets each one.
 - From the qualifications, CPD, equipment, skills and areas of expertise, select only the items relevant to this job and weave them in; leave out the rest.
-- Build CAR scenarios from the candidate's achievements, skills and the kind of work their settings involve. Keep them realistic and specific (patient presentations, actions, team involvement, outcomes) but do not invent precise statistics the candidate did not supply; use qualitative results or the figures given.
+- Build CAR scenarios around the skills the new role asks for (e.g. for an emergency role: triage, recognising and escalating a deteriorating patient, sepsis, patient flow), drawn from the candidate's achievements, skills and the kind of work their real setting involves, without naming that setting. Keep them realistic and specific (patient presentations, actions, team involvement, outcomes) but do not invent precise statistics the candidate did not supply; use qualitative results or the figures given.
 - Use UK English spelling and NHS terminology (e.g. NMC Code, NEWS2, SBAR, Datix, MDT, safeguarding, duty of candour).
 - Never use placeholders such as [Name] in the body; if a detail is missing, write around it.
 

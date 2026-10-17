@@ -13,7 +13,7 @@ A web tool that writes tailored, ATS-optimised supporting statements (1,200–1,
 
 The statement follows a fixed structure: an opening hook, a CAR-method (Context, Action, Result) response to **every** person specification criterion, wording that mirrors the job description's keywords, the Trust's values woven throughout, and a closing call to action. Only the qualifications, CPD and skills relevant to that job are used.
 
-The candidate's experience is presented through the lens of the new role, with transferable skills drawn out explicitly. The statement never claims a job title, department or qualification that isn't in the profile, because NHS recruiters verify employment history and references.
+Past employment is described only as "Registered Nurse at [hospital] for [years]"; the previous title, ward or department is never named. Everything else is written in the language of the new job, and the examples centre on the skills it asks for. The real role and department are used only to keep examples consistent with work the nurse has actually done, and the statement never claims a title, department or qualification that isn't in the profile.
 
 The prompt lives in [`lib/prompt.ts`](lib/prompt.ts) if you want to adjust the tone or structure.
 

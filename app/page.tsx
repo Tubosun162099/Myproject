@@ -231,8 +231,9 @@ export default function Home() {
           <section className="card">
             <h2>Work experience</h2>
             <p className="hint">
-              Add each hospital you have worked at and how long you were there. Your real role and
-              department are used to show how your experience transfers to each new job.
+              Add each hospital you have worked at and how long you were there. Statements name
+              only the hospital and your years as a Registered Nurse. Your role and department are
+              never written in; they only keep your examples true to work you have done.
             </p>
             {profile.employers.map((e, i) => (
               <div className="employer" key={i}>
