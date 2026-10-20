@@ -63,8 +63,10 @@ export async function POST(req: Request) {
       } catch (err) {
         let message = "Something went wrong while generating the statement.";
         if (err instanceof Anthropic.AuthenticationError) {
-          message =
-            "Anthropic rejected the API key. Check ANTHROPIC_API_KEY in Vercel is a valid, active key starting with sk-ant-, then redeploy.";
+          // Report only the key's shape, never its contents.
+          message = apiKey.startsWith("sk-ant-")
+            ? `Anthropic rejected the API key. It has the right format (sk-ant-…, ${apiKey.length} characters) but is not active: it may have been deleted, copied incompletely, or belong to a different account. Create a new key, update ANTHROPIC_API_KEY in Vercel, then redeploy.`
+            : "The ANTHROPIC_API_KEY in Vercel is not an Anthropic key: Anthropic keys start with sk-ant-. Create one at console.anthropic.com, update the variable in Vercel, then redeploy.";
         } else if (err instanceof Anthropic.PermissionDeniedError) {
           message =
             "The Anthropic account can't use this model. Check the account has billing set up and credit available.";
