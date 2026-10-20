@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "NHS Statement Builder",
+  title: "Temiloluwa",
   description: "Craft tailored, ATS-optimised supporting statements for NHS nursing roles.",
 };
 

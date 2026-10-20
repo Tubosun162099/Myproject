@@ -182,7 +182,7 @@ export default function Home() {
   return (
     <main className="container">
       <header>
-        <h1>NHS Supporting Statement Builder</h1>
+        <h1>Temiloluwa</h1>
         <p>
           Save your nursing profile once, then paste any job description to get a tailored,
           ATS-optimised 1,200 to 1,500 word supporting statement.
