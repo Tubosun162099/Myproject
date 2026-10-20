@@ -24,8 +24,8 @@ End with a confident, warm call to action: the candidate's desire to bring their
 HOW TO USE THE CANDIDATE PROFILE
 
 - Use the employer names, locations and years of experience exactly as given.
-- Job titles in the statement come ONLY from the "previous roles for this application" section. Name each exactly as entered there (e.g. "in my role as Staff Nurse at University of Ilorin Teaching Hospital"). Make the first one listed the anchor of the statement, and draw on the others to show breadth of experience. If that section is not supplied, describe past employment only as "Registered Nurse" at the named hospital for the stated years.
-- The work history's "background role" and "background setting" are for your reference only, so examples stay consistent with work the candidate has actually done. Never write them into the statement, even when they differ from the titles entered for this application, and never name a ward, department or speciality from them.
+- Job titles and departments in the statement come ONLY from the "previous roles for this application" section. Name each title, department and workplace exactly as entered there (e.g. "in my role as Staff Nurse in the Emergency Department at University of Ilorin Teaching Hospital"). Make the first one listed the anchor of the statement, and draw on the others to show breadth of experience. If that section is not supplied, describe past employment only as "Registered Nurse" at the named hospital for the stated years.
+- The work history's "background role" and "background setting" are for your reference only, so examples stay consistent with work the candidate has actually done. Never write them into the statement, even when they differ from the titles and departments entered for this application.
 - Never state or imply that the candidate holds a qualification that is not in their profile.
 - Write the rest of the statement in the language of the new role: lead with the duties, skills and keywords of the job description and person specification, and show how the candidate's real experience meets each one.
 - From the qualifications, CPD, equipment, skills and areas of expertise, select only the items relevant to this job and weave them in; leave out the rest.
@@ -63,8 +63,22 @@ export function buildUserPrompt(profile: Profile, job: JobPosting): string {
     .join("\n");
 
   const previousRoles = (job.previousRoles ?? [])
-    .filter((r) => r.title.trim() || r.workplace.trim())
-    .map((r) => `- ${[r.title.trim(), r.workplace.trim()].filter(Boolean).join(" at ")}`)
+    .map((r) => ({
+      title: (r.title ?? "").trim(),
+      department: (r.department ?? "").trim(),
+      workplace: (r.workplace ?? "").trim(),
+    }))
+    .filter((r) => r.title || r.department || r.workplace)
+    .map((r) =>
+      [
+        r.title && `- Job title: ${r.title}`,
+        r.department && `  Department: ${r.department}`,
+        r.workplace && `  Workplace: ${r.workplace}`,
+      ]
+        .filter(Boolean)
+        .join("\n")
+        .replace(/^ {2}/, "- "),
+    )
     .join("\n");
 
   const jobLabel = [job.jobTitle.trim(), job.department.trim() && `(${job.department.trim()})`]

@@ -37,10 +37,11 @@ export interface JobPosting {
 
 export interface PreviousRole {
   title: string;
+  department: string;
   workplace: string;
 }
 
-export const emptyPreviousRole = (): PreviousRole => ({ title: "", workplace: "" });
+export const emptyPreviousRole = (): PreviousRole => ({ title: "", department: "", workplace: "" });
 
 export const emptyEmployer = (): Employer => ({
   hospital: "",

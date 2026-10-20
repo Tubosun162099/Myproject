@@ -106,8 +106,13 @@ export default function Home() {
     };
     // Carry over the single previous role saved by older versions.
     if (j.previousTitle !== undefined || j.previousWorkplace !== undefined) {
-      j.previousRoles = [{ title: j.previousTitle ?? "", workplace: j.previousWorkplace ?? "" }];
+      j.previousRoles = [
+        { ...emptyPreviousRole(), title: j.previousTitle ?? "", workplace: j.previousWorkplace ?? "" },
+      ];
     }
+    // Fill in fields added since the roles were saved (e.g. department).
+    j.previousRoles = (j.previousRoles ?? []).map((r) => ({ ...emptyPreviousRole(), ...r }));
+    if (!j.previousRoles.length) j.previousRoles = [emptyPreviousRole()];
     delete j.previousTitle;
     delete j.previousWorkplace;
     setJob(j);
@@ -220,8 +225,8 @@ export default function Home() {
             specification and Trust values from NHS Jobs, Trac or Jobtrain.
           </li>
           <li>
-            <strong>Tell us your previous roles.</strong> Enter each job title you held and where
-            you worked. Your statement names these roles exactly as you write them.
+            <strong>Tell us your previous roles.</strong> Enter each job title you held, the
+            department and where you worked. Your statement names these exactly as you write them.
           </li>
           <li>
             <strong>Optional: add an earlier statement.</strong> If you have already written a
@@ -481,8 +486,8 @@ export default function Home() {
           <section className="card">
             <h2>Your previous roles</h2>
             <p className="hint">
-              Each job title you held and where you worked, most recent first. Your statement names
-              these roles exactly as you enter them.
+              Each job title you held, the department and where you worked, most recent first. Your
+              statement names these exactly as you enter them.
             </p>
             {job.previousRoles.map((r, i) => (
               <div className="employer" key={i}>
@@ -508,6 +513,12 @@ export default function Home() {
                     value={r.title}
                     placeholder="e.g. Staff Nurse"
                     onChange={(v) => updatePreviousRole(i, { title: v })}
+                  />
+                  <TextInput
+                    label="Department"
+                    value={r.department}
+                    placeholder="e.g. Emergency Department"
+                    onChange={(v) => updatePreviousRole(i, { department: v })}
                   />
                   <TextInput
                     label="Where you worked"
