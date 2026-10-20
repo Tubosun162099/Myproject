@@ -28,13 +28,19 @@ export interface JobPosting {
   jobDescription: string;
   personSpecification: string;
   trustValues: string;
-  // The candidate's own previous/current job title and workplace, entered per
+  // The candidate's own previous/current job titles and workplaces, entered per
   // application and named in the statement as given.
-  previousTitle: string;
-  previousWorkplace: string;
+  previousRoles: PreviousRole[];
   // Optional earlier supporting statement for this same job, used as source material.
   existingStatement: string;
 }
+
+export interface PreviousRole {
+  title: string;
+  workplace: string;
+}
+
+export const emptyPreviousRole = (): PreviousRole => ({ title: "", workplace: "" });
 
 export const emptyEmployer = (): Employer => ({
   hospital: "",
@@ -64,8 +70,7 @@ export const emptyJob = (): JobPosting => ({
   jobDescription: "",
   personSpecification: "",
   trustValues: "",
-  previousTitle: "",
-  previousWorkplace: "",
+  previousRoles: [emptyPreviousRole()],
   existingStatement: "",
 });
 

@@ -4,10 +4,12 @@ import { useEffect, useId, useRef, useState } from "react";
 import {
   emptyEmployer,
   emptyJob,
+  emptyPreviousRole,
   emptyProfile,
   isProfileComplete,
   type Employer,
   type JobPosting,
+  type PreviousRole,
   type Profile,
 } from "@/lib/profile";
 
@@ -98,7 +100,17 @@ export default function Home() {
     const p = load(PROFILE_KEY, emptyProfile());
     if (!p.employers?.length) p.employers = [emptyEmployer()];
     setProfile(p);
-    setJob(load(JOB_KEY, emptyJob()));
+    const j = load(JOB_KEY, emptyJob()) as JobPosting & {
+      previousTitle?: string;
+      previousWorkplace?: string;
+    };
+    // Carry over the single previous role saved by older versions.
+    if (j.previousTitle !== undefined || j.previousWorkplace !== undefined) {
+      j.previousRoles = [{ title: j.previousTitle ?? "", workplace: j.previousWorkplace ?? "" }];
+    }
+    delete j.previousTitle;
+    delete j.previousWorkplace;
+    setJob(j);
     if (isProfileComplete(p)) setTab("statement");
     setLoaded(true);
   }, []);
@@ -125,6 +137,12 @@ export default function Home() {
 
   const updateJob = <K extends keyof JobPosting>(key: K, value: JobPosting[K]) =>
     setJob((j) => ({ ...j, [key]: value }));
+
+  const updatePreviousRole = (i: number, patch: Partial<PreviousRole>) =>
+    updateJob(
+      "previousRoles",
+      job.previousRoles.map((r, idx) => (idx === i ? { ...r, ...patch } : r)),
+    );
 
   async function generate() {
     setError(null);
@@ -202,8 +220,8 @@ export default function Home() {
             specification and Trust values from NHS Jobs, Trac or Jobtrain.
           </li>
           <li>
-            <strong>Tell us your previous role.</strong> Enter the job title you held and where you
-            worked. Your statement names this role exactly as you write it.
+            <strong>Tell us your previous roles.</strong> Enter each job title you held and where
+            you worked. Your statement names these roles exactly as you write them.
           </li>
           <li>
             <strong>Optional: add an earlier statement.</strong> If you have already written a
@@ -461,25 +479,52 @@ export default function Home() {
           </section>
 
           <section className="card">
-            <h2>Your previous role</h2>
+            <h2>Your previous roles</h2>
             <p className="hint">
-              The job title you held and where you worked. Your statement names this role exactly
-              as you enter it.
+              Each job title you held and where you worked, most recent first. Your statement names
+              these roles exactly as you enter them.
             </p>
-            <div className="grid">
-              <TextInput
-                label="Previous / current job title"
-                value={job.previousTitle}
-                placeholder="e.g. Staff Nurse"
-                onChange={(v) => updateJob("previousTitle", v)}
-              />
-              <TextInput
-                label="Where you worked"
-                value={job.previousWorkplace}
-                placeholder="e.g. University of Ilorin Teaching Hospital"
-                onChange={(v) => updateJob("previousWorkplace", v)}
-              />
-            </div>
+            {job.previousRoles.map((r, i) => (
+              <div className="employer" key={i}>
+                <div className="employer-head">
+                  <strong>Role {i + 1}</strong>
+                  {job.previousRoles.length > 1 && (
+                    <button
+                      className="btn link"
+                      onClick={() =>
+                        updateJob(
+                          "previousRoles",
+                          job.previousRoles.filter((_, idx) => idx !== i),
+                        )
+                      }
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+                <div className="grid">
+                  <TextInput
+                    label="Previous job title"
+                    value={r.title}
+                    placeholder="e.g. Staff Nurse"
+                    onChange={(v) => updatePreviousRole(i, { title: v })}
+                  />
+                  <TextInput
+                    label="Where you worked"
+                    value={r.workplace}
+                    placeholder="e.g. University of Ilorin Teaching Hospital"
+                    onChange={(v) => updatePreviousRole(i, { workplace: v })}
+                  />
+                </div>
+              </div>
+            ))}
+            <button
+              className="btn secondary"
+              style={{ marginBottom: 14 }}
+              onClick={() => updateJob("previousRoles", [...job.previousRoles, emptyPreviousRole()])}
+            >
+              + Add another role
+            </button>
             <TextArea
               label="Earlier supporting statement for this job (optional)"
               hint="If you have already written one for this job, paste it here and its best material will be used"

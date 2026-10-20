@@ -24,7 +24,7 @@ End with a confident, warm call to action: the candidate's desire to bring their
 HOW TO USE THE CANDIDATE PROFILE
 
 - Use the employer names, locations and years of experience exactly as given.
-- If the candidate has entered a previous job title and workplace for this application, name them exactly as entered (e.g. "in my role as Staff Nurse at University of Ilorin Teaching Hospital") and make this role the anchor of the statement. Otherwise describe past employment only as "Registered Nurse" at the named hospital for the stated years, without naming a ward, department or speciality.
+- If the candidate has entered previous job titles and workplaces for this application, name each exactly as entered (e.g. "in my role as Staff Nurse at University of Ilorin Teaching Hospital"). Make the first one listed the anchor of the statement, and draw on the others to show breadth of experience. Otherwise describe past employment only as "Registered Nurse" at the named hospital for the stated years, without naming a ward, department or speciality.
 - The role and department in the work history are there so every example stays consistent with work the candidate has actually done. Never state or imply that the candidate held a title other than the ones entered, worked in a department or speciality not given, or holds a qualification that is not in their profile.
 - Write the rest of the statement in the language of the new role: lead with the duties, skills and keywords of the job description and person specification, and show how the candidate's real experience meets each one.
 - From the qualifications, CPD, equipment, skills and areas of expertise, select only the items relevant to this job and weave them in; leave out the rest.
@@ -60,6 +60,11 @@ export function buildUserPrompt(profile: Profile, job: JobPosting): string {
     })
     .join("\n");
 
+  const previousRoles = (job.previousRoles ?? [])
+    .filter((r) => r.title.trim() || r.workplace.trim())
+    .map((r) => `- ${[r.title.trim(), r.workplace.trim()].filter(Boolean).join(" at ")}`)
+    .join("\n");
+
   const jobLabel = [job.jobTitle.trim(), job.department.trim() && `(${job.department.trim()})`]
     .filter(Boolean)
     .join(" ");
@@ -77,8 +82,9 @@ ${job.personSpecification.trim() || "(not supplied; infer the essential and desi
 === TRUST VALUES / BEHAVIOURAL FRAMEWORK ===
 ${job.trustValues.trim() || "(not supplied)"}
 
-=== CANDIDATE'S PREVIOUS ROLE FOR THIS APPLICATION ===
-${section("Job title", job.previousTitle) + section("Workplace", job.previousWorkplace) || "(not supplied)\n"}
+=== CANDIDATE'S PREVIOUS ROLES FOR THIS APPLICATION ===
+${previousRoles || "(not supplied)"}
+
 === CANDIDATE PROFILE ===
 ${section("Name", profile.fullName)}${section("NMC registration", profile.nmcRegistered)}Work history:
 ${employers || "(not supplied)"}
