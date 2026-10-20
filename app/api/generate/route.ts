@@ -5,7 +5,9 @@ import type { JobPosting, Profile } from "@/lib/profile";
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
-const client = new Anthropic();
+// Strip whitespace and quotes that often get pasted in with the key.
+const apiKey = process.env.ANTHROPIC_API_KEY?.trim().replace(/^["']|["']$/g, "");
+const client = new Anthropic({ apiKey });
 
 export async function POST(req: Request) {
   let body: { profile?: Profile; job?: JobPosting };
@@ -22,7 +24,7 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!apiKey) {
     return Response.json(
       { error: "The server is not configured: set ANTHROPIC_API_KEY and restart." },
       { status: 500 },
@@ -61,7 +63,11 @@ export async function POST(req: Request) {
       } catch (err) {
         let message = "Something went wrong while generating the statement.";
         if (err instanceof Anthropic.AuthenticationError) {
-          message = "The server's Anthropic API key is missing or invalid.";
+          message =
+            "Anthropic rejected the API key. Check ANTHROPIC_API_KEY in Vercel is a valid, active key starting with sk-ant-, then redeploy.";
+        } else if (err instanceof Anthropic.PermissionDeniedError) {
+          message =
+            "The Anthropic account can't use this model. Check the account has billing set up and credit available.";
         } else if (err instanceof Anthropic.RateLimitError) {
           message = "Too many requests right now. Please wait a minute and try again.";
         } else if (err instanceof Anthropic.APIError) {
