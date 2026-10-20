@@ -24,8 +24,9 @@ End with a confident, warm call to action: the candidate's desire to bring their
 HOW TO USE THE CANDIDATE PROFILE
 
 - Use the employer names, locations and years of experience exactly as given.
-- If the candidate has entered previous job titles and workplaces for this application, name each exactly as entered (e.g. "in my role as Staff Nurse at University of Ilorin Teaching Hospital"). Make the first one listed the anchor of the statement, and draw on the others to show breadth of experience. Otherwise describe past employment only as "Registered Nurse" at the named hospital for the stated years, without naming a ward, department or speciality.
-- The role and department in the work history are there so every example stays consistent with work the candidate has actually done. Never state or imply that the candidate held a title other than the ones entered, worked in a department or speciality not given, or holds a qualification that is not in their profile.
+- Job titles in the statement come ONLY from the "previous roles for this application" section. Name each exactly as entered there (e.g. "in my role as Staff Nurse at University of Ilorin Teaching Hospital"). Make the first one listed the anchor of the statement, and draw on the others to show breadth of experience. If that section is not supplied, describe past employment only as "Registered Nurse" at the named hospital for the stated years.
+- The work history's "background role" and "background setting" are for your reference only, so examples stay consistent with work the candidate has actually done. Never write them into the statement, even when they differ from the titles entered for this application, and never name a ward, department or speciality from them.
+- Never state or imply that the candidate holds a qualification that is not in their profile.
 - Write the rest of the statement in the language of the new role: lead with the duties, skills and keywords of the job description and person specification, and show how the candidate's real experience meets each one.
 - From the qualifications, CPD, equipment, skills and areas of expertise, select only the items relevant to this job and weave them in; leave out the rest.
 - Build vivid, memorable CAR scenarios around the skills the new role asks for (e.g. for an emergency role: triage, recognising and escalating a deteriorating patient, sepsis, patient flow), drawn from the candidate's achievements, skills, equipment and the kind of work their role involves. Each scenario should read like a real moment on shift: a specific patient presentation (age range, condition, what the candidate noticed), the clinical reasoning and actions taken (assessments, tools such as NEWS2 or SBAR, escalation, MDT involvement, communication with the patient and family), and a clear result for the patient, team or service. Vary the scenarios so no two cover the same skill, and tie each one back to the exact person specification wording. Do not invent precise statistics the candidate did not supply; use qualitative results or the figures given.
@@ -52,8 +53,9 @@ export function buildUserPrompt(profile: Profile, job: JobPosting): string {
       const parts = [
         `- ${e.hospital.trim()}${e.location.trim() ? `, ${e.location.trim()}` : ""}`,
         e.years.trim() && `  Experience: ${e.years.trim()}`,
-        e.role.trim() && `  Role: ${e.role.trim()}`,
-        e.department.trim() && `  Department/setting: ${e.department.trim()}`,
+        e.role.trim() && `  Background role (reference only, do not name): ${e.role.trim()}`,
+        e.department.trim() &&
+          `  Background setting (reference only, do not name): ${e.department.trim()}`,
         e.current && "  (current employer)",
       ];
       return parts.filter(Boolean).join("\n");
