@@ -1,4 +1,4 @@
-# Temiloluwa
+# NHS Supporting Statement Builder
 
 A web tool that writes tailored, ATS-optimised supporting statements (1,200–1,500 words) for nurses applying to NHS roles (Jobtrain, Trac, NHS Jobs, NHS Scotland).
 

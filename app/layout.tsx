@@ -3,7 +3,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Temiloluwa",
+  title: "NHS Statement Builder",
   description: "Craft tailored, ATS-optimised supporting statements for NHS nursing roles.",
 };
 
