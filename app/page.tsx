@@ -189,6 +189,37 @@ export default function Home() {
         </p>
       </header>
 
+      <details className="card how" open={!profileReady}>
+        <summary>How it works</summary>
+        <ol>
+          <li>
+            <strong>Build your profile once.</strong> Add the hospitals you have worked at, your
+            years of experience, qualifications, CPD, equipment, achievements, skills and areas of
+            expertise. It is saved in this browser and you can edit it any time.
+          </li>
+          <li>
+            <strong>Add the job.</strong> For each application, paste the job description, person
+            specification and Trust values from NHS Jobs, Trac or Jobtrain.
+          </li>
+          <li>
+            <strong>Tell us your previous role.</strong> Enter the job title you held and where you
+            worked. Your statement names this role exactly as you write it.
+          </li>
+          <li>
+            <strong>Optional: add an earlier statement.</strong> If you have already written a
+            supporting statement for this job, paste it in. Its best examples and details are
+            folded into the new one.
+          </li>
+          <li>
+            <strong>Get your statement.</strong> You receive a 1,200 to 1,500 word statement with a
+            strong opening, a detailed CAR (Context, Action, Result) example for every person
+            specification point, the job&apos;s keywords for ATS screening, the Trust&apos;s values
+            woven in, and a confident closing. Read it through, make sure every example reflects
+            your own experience, then copy or download it.
+          </li>
+        </ol>
+      </details>
+
       <div className="tabs" role="tablist">
         <button
           className="tab"
@@ -231,9 +262,9 @@ export default function Home() {
           <section className="card">
             <h2>Work experience</h2>
             <p className="hint">
-              Add each hospital you have worked at and how long you were there. Statements name
-              only the hospital and your years as a Registered Nurse. Your role and department are
-              never written in; they only keep your examples true to work you have done.
+              Add each hospital you have worked at and how long you were there. Your role and
+              department here keep your examples true to work you have done. The job title named
+              in each statement is the one you enter for that application.
             </p>
             {profile.employers.map((e, i) => (
               <div className="employer" key={i}>
@@ -426,6 +457,35 @@ export default function Home() {
               value={job.trustValues}
               placeholder="e.g. Patient-centred, Collaborative, Fair, Accountable, Empowered"
               onChange={(v) => updateJob("trustValues", v)}
+            />
+          </section>
+
+          <section className="card">
+            <h2>Your previous role</h2>
+            <p className="hint">
+              The job title you held and where you worked. Your statement names this role exactly
+              as you enter it.
+            </p>
+            <div className="grid">
+              <TextInput
+                label="Previous / current job title"
+                value={job.previousTitle}
+                placeholder="e.g. Staff Nurse"
+                onChange={(v) => updateJob("previousTitle", v)}
+              />
+              <TextInput
+                label="Where you worked"
+                value={job.previousWorkplace}
+                placeholder="e.g. University of Ilorin Teaching Hospital"
+                onChange={(v) => updateJob("previousWorkplace", v)}
+              />
+            </div>
+            <TextArea
+              label="Earlier supporting statement for this job (optional)"
+              hint="If you have already written one for this job, paste it here and its best material will be used"
+              tall
+              value={job.existingStatement}
+              onChange={(v) => updateJob("existingStatement", v)}
             />
             <div className="actions">
               <button className="btn" disabled={!canGenerate} onClick={generate}>

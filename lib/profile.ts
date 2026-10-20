@@ -28,6 +28,12 @@ export interface JobPosting {
   jobDescription: string;
   personSpecification: string;
   trustValues: string;
+  // The candidate's own previous/current job title and workplace, entered per
+  // application and named in the statement as given.
+  previousTitle: string;
+  previousWorkplace: string;
+  // Optional earlier supporting statement for this same job, used as source material.
+  existingStatement: string;
 }
 
 export const emptyEmployer = (): Employer => ({
@@ -58,6 +64,9 @@ export const emptyJob = (): JobPosting => ({
   jobDescription: "",
   personSpecification: "",
   trustValues: "",
+  previousTitle: "",
+  previousWorkplace: "",
+  existingStatement: "",
 });
 
 export function isProfileComplete(p: Profile): boolean {

@@ -24,11 +24,12 @@ End with a confident, warm call to action: the candidate's desire to bring their
 HOW TO USE THE CANDIDATE PROFILE
 
 - Use the employer names, locations and years of experience exactly as given.
-- Describe the candidate's past employment only as "Registered Nurse" (or "Nurse") at the named hospital for the stated years, e.g. "over two years as a Registered Nurse at University of Ilorin Teaching Hospital". Do not name their previous job title, ward, department or speciality anywhere in the statement.
-- Their role and department are given to you only so that every example stays consistent with work they have actually done. Never state or imply that the candidate held a different title, worked in a different department or speciality, or holds a qualification that is not in their profile.
+- If the candidate has entered a previous job title and workplace for this application, name them exactly as entered (e.g. "in my role as Staff Nurse at University of Ilorin Teaching Hospital") and make this role the anchor of the statement. Otherwise describe past employment only as "Registered Nurse" at the named hospital for the stated years, without naming a ward, department or speciality.
+- The role and department in the work history are there so every example stays consistent with work the candidate has actually done. Never state or imply that the candidate held a title other than the ones entered, worked in a department or speciality not given, or holds a qualification that is not in their profile.
 - Write the rest of the statement in the language of the new role: lead with the duties, skills and keywords of the job description and person specification, and show how the candidate's real experience meets each one.
 - From the qualifications, CPD, equipment, skills and areas of expertise, select only the items relevant to this job and weave them in; leave out the rest.
-- Build CAR scenarios around the skills the new role asks for (e.g. for an emergency role: triage, recognising and escalating a deteriorating patient, sepsis, patient flow), drawn from the candidate's achievements, skills and the kind of work their real setting involves, without naming that setting. Keep them realistic and specific (patient presentations, actions, team involvement, outcomes) but do not invent precise statistics the candidate did not supply; use qualitative results or the figures given.
+- Build vivid, memorable CAR scenarios around the skills the new role asks for (e.g. for an emergency role: triage, recognising and escalating a deteriorating patient, sepsis, patient flow), drawn from the candidate's achievements, skills, equipment and the kind of work their role involves. Each scenario should read like a real moment on shift: a specific patient presentation (age range, condition, what the candidate noticed), the clinical reasoning and actions taken (assessments, tools such as NEWS2 or SBAR, escalation, MDT involvement, communication with the patient and family), and a clear result for the patient, team or service. Vary the scenarios so no two cover the same skill, and tie each one back to the exact person specification wording. Do not invent precise statistics the candidate did not supply; use qualitative results or the figures given.
+- If the candidate supplies a supporting statement they previously wrote for this job, mine it for facts, examples, achievements and personal motivation, and fold the strongest material into the new statement. Do not copy its sentences; rewrite everything to the structure and standard above, and drop anything that conflicts with the profile.
 - Use UK English spelling and NHS terminology (e.g. NMC Code, NEWS2, SBAR, Datix, MDT, safeguarding, duty of candour).
 - Never use placeholders such as [Name] in the body; if a detail is missing, write around it.
 
@@ -39,8 +40,8 @@ CRITICAL GUIDELINES
 - Avoid clichés and AI-sounding filler ("I am writing to express", "in today's fast-paced world", "tapestry", "delve").
 - Output only the supporting statement as plain text paragraphs. No title, no preamble, no word count, no notes.`;
 
-function section(label: string, value: string): string {
-  const v = value.trim();
+function section(label: string, value: string | undefined): string {
+  const v = (value ?? "").trim();
   return v ? `${label}:\n${v}\n` : "";
 }
 
@@ -76,9 +77,15 @@ ${job.personSpecification.trim() || "(not supplied; infer the essential and desi
 === TRUST VALUES / BEHAVIOURAL FRAMEWORK ===
 ${job.trustValues.trim() || "(not supplied)"}
 
+=== CANDIDATE'S PREVIOUS ROLE FOR THIS APPLICATION ===
+${section("Job title", job.previousTitle) + section("Workplace", job.previousWorkplace) || "(not supplied)\n"}
 === CANDIDATE PROFILE ===
 ${section("Name", profile.fullName)}${section("NMC registration", profile.nmcRegistered)}Work history:
 ${employers || "(not supplied)"}
 
-${section("Qualifications and certifications", profile.qualifications)}${section("Continuous professional development", profile.cpd)}${section("Equipment used", profile.equipment)}${section("Key achievements", profile.achievements)}${section("Skills", profile.skills)}${section("Areas of expertise", profile.expertise)}`;
+${section("Qualifications and certifications", profile.qualifications)}${section("Continuous professional development", profile.cpd)}${section("Equipment used", profile.equipment)}${section("Key achievements", profile.achievements)}${section("Skills", profile.skills)}${section("Areas of expertise", profile.expertise)}${
+    job.existingStatement?.trim()
+      ? `\n=== CANDIDATE'S EARLIER SUPPORTING STATEMENT FOR THIS JOB (source material only) ===\n${job.existingStatement.trim()}\n`
+      : ""
+  }`;
 }
