@@ -17,13 +17,26 @@ Only the previous job titles, departments and workplaces entered for each applic
 
 The prompt lives in [`lib/prompt.ts`](lib/prompt.ts) if you want to adjust the tone or structure.
 
+## AI provider
+
+The tool works with either Claude (Anthropic) or OpenAI. Set one key:
+
+| Variable | Purpose |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | Use Claude (from console.anthropic.com) |
+| `OPENAI_API_KEY` | Use OpenAI (from platform.openai.com) |
+| `AI_PROVIDER` | Optional: `anthropic` or `openai` to choose when both keys are set. Default: Anthropic |
+| `OPENAI_MODEL` | Optional: OpenAI model, default `gpt-5.5` |
+
+The statement instructions were written and tuned for Claude; OpenAI output may differ.
+
 ## Run locally
 
-Requires Node.js 20+ and an [Anthropic API key](https://console.anthropic.com/).
+Requires Node.js 20+ and an API key from either provider.
 
 ```bash
 npm install
-cp .env.example .env.local   # then put your key in ANTHROPIC_API_KEY
+cp .env.example .env.local   # then fill in a key
 npm run dev
 ```
 
@@ -31,4 +44,4 @@ Open http://localhost:3000.
 
 ## Deploy
 
-Deploys as-is to Vercel (or any Node host). Set the `ANTHROPIC_API_KEY` environment variable in the project settings. Generation streams for up to ~2 minutes, so the API route sets `maxDuration = 300`.
+Deploys as-is to Vercel (or any Node host). Set the environment variables above in the project settings and redeploy. Generation streams for up to a few minutes, so the API route sets `maxDuration = 300`.

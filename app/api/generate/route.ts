@@ -1,13 +1,9 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { buildUserPrompt, SYSTEM_PROMPT } from "@/lib/prompt";
-import type { JobPosting, Profile } from "@/lib/profile";
+import { emptyJob, emptyProfile, type JobPosting, type Profile } from "@/lib/profile";
+import { describeError, hasKey, missingKeyMessage, selectProvider, streamStatement } from "@/lib/providers";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
-
-// Strip whitespace and quotes that often get pasted in with the key.
-const apiKey = process.env.ANTHROPIC_API_KEY?.trim().replace(/^["']|["']$/g, "");
-const client = new Anthropic({ apiKey });
 
 export async function POST(req: Request) {
   let body: { profile?: Profile; job?: JobPosting };
@@ -16,72 +12,48 @@ export async function POST(req: Request) {
   } catch {
     return Response.json({ error: "Invalid request body." }, { status: 400 });
   }
-  const { profile, job } = body;
-  if (!profile || !job || !job.jobDescription?.trim()) {
+  if (!body.profile || !body.job?.jobDescription?.trim()) {
     return Response.json(
       { error: "A profile and a job description are required." },
       { status: 400 },
     );
   }
+  // Fill any missing fields so a partial request can't crash the prompt builder.
+  const profile: Profile = { ...emptyProfile(), ...body.profile };
+  const job: JobPosting = { ...emptyJob(), ...body.job };
 
-  if (!apiKey) {
-    return Response.json(
-      { error: "The server is not configured: set ANTHROPIC_API_KEY and restart." },
-      { status: 500 },
-    );
+  const provider = selectProvider();
+  if (!provider || !hasKey(provider)) {
+    return Response.json({ error: missingKeyMessage(provider) }, { status: 500 });
   }
 
-  const stream = client.beta.messages.stream({
-    model: "claude-opus-5-5",
-    max_tokens: 64000,
-    thinking: { type: "adaptive" },
-    output_config: { effort: "high" },
-    betas: ["server-side-fallback-2026-07-01"],
-    fallbacks: "default",
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: buildUserPrompt(profile, job) }],
-  });
-
+  const abort = new AbortController();
   const encoder = new TextEncoder();
   const readable = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const event of stream) {
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
-          }
+        for await (const text of streamStatement(
+          provider,
+          SYSTEM_PROMPT,
+          buildUserPrompt(profile, job),
+          abort.signal,
+        )) {
+          controller.enqueue(encoder.encode(text));
         }
-        const final = await stream.finalMessage();
-        if (final.stop_reason === "refusal") {
-          controller.enqueue(
-            encoder.encode("\n\n[The request could not be completed. Please review the inputs and try again.]"),
-          );
-        } else if (final.stop_reason === "max_tokens") {
-          controller.enqueue(encoder.encode("\n\n[Output was cut short. Please try again.]"));
-        }
-        controller.close();
       } catch (err) {
-        let message = "Something went wrong while generating the statement.";
-        if (err instanceof Anthropic.AuthenticationError) {
-          // Report only the key's shape, never its contents.
-          message = apiKey.startsWith("sk-ant-")
-            ? `Anthropic rejected the API key. It has the right format (sk-ant-…, ${apiKey.length} characters) but is not active: it may have been deleted, copied incompletely, or belong to a different account. Create a new key, update ANTHROPIC_API_KEY in Vercel, then redeploy.`
-            : "The ANTHROPIC_API_KEY in Vercel is not an Anthropic key: Anthropic keys start with sk-ant-. Create one at console.anthropic.com, update the variable in Vercel, then redeploy.";
-        } else if (err instanceof Anthropic.PermissionDeniedError) {
-          message =
-            "The Anthropic account can't use this model. Check the account has billing set up and credit available.";
-        } else if (err instanceof Anthropic.RateLimitError) {
-          message = "Too many requests right now. Please wait a minute and try again.";
-        } else if (err instanceof Anthropic.APIError) {
-          message = `The AI service returned an error (${err.status ?? "unknown"}). Please try again.`;
+        if (!abort.signal.aborted) {
+          console.error(err);
+          controller.enqueue(encoder.encode(`\n\n[${describeError(provider, err)}]`));
         }
-        console.error(err);
-        controller.enqueue(encoder.encode(`\n\n[${message}]`));
+      }
+      try {
         controller.close();
+      } catch {
+        // Already closed because the client disconnected.
       }
     },
     cancel() {
-      stream.abort();
+      abort.abort();
     },
   });
 
