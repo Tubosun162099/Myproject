@@ -80,24 +80,21 @@
     .side ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 28px; }
     .side li { letter-spacing: -0.32px; white-space: nowrap; }
 
-    .nav-link { display: inline-flex; align-items: center; color: var(--muted); transition: color .6s var(--ease-out); }
+    .nav-link { position: relative; display: inline-flex; align-items: center; color: var(--muted); transition: color .6s var(--ease-out); }
     .nav-link.is-active { color: var(--text); }
     .nav-link:not(.is-active):hover { color: #a8a8a8; }
 
-    /* Progress rail: shows you moving from Intro to Collections */
-    .rail {
-      position: absolute; left: -11px; width: 1px;
-      background: rgba(106,106,106,.28);
+    /* Dot beside each section name: the lit one is where you are */
+    .nav-link::before {
+      content: ""; position: absolute; left: -12px; top: 50%;
+      width: 6px; height: 6px; margin-top: -3px; border-radius: 50%;
+      background: var(--muted); opacity: .45; transform: scale(.5);
+      transition: transform .6s var(--spring), opacity .4s ease, background-color .4s ease, box-shadow .6s ease;
     }
-    .rail i {
-      position: absolute; inset: 0; background: var(--text);
-      transform: scaleY(var(--p, 0)); transform-origin: top;
-    }
-    .marker {
-      position: absolute; left: -13px; top: 0; width: 5px; height: 5px; margin-top: -2.5px;
-      border-radius: 50%; background: var(--text);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.08), 0 0 14px rgba(255,255,255,.45);
-      transform: translateY(var(--my-y, 0px));
+    .nav-link:hover::before { opacity: .8; }
+    .nav-link.is-active::before {
+      background: var(--text); opacity: 1; transform: scale(1);
+      box-shadow: 0 0 0 4px rgba(255,255,255,.07), 0 0 12px rgba(255,255,255,.5);
     }
 
     .nav-soon { color: var(--faint); cursor: default; display: inline-flex; align-items: center; gap: 10px; }
@@ -138,24 +135,25 @@
       transition: opacity 1s var(--ease-out) var(--d,0s), transform 1.2s var(--ease-out) var(--d,0s);
     }
 
-    /* ---------- Collections (no header: the side rail shows the move) ---------- */
+    /* ---------- Collections: Instagram-style, mixed sizes (masonry) ---------- */
     .collections {
       position: relative; z-index: 2;
       padding: var(--top) 32px 200px calc(25% + 16 * var(--u));
       min-height: 100vh;
     }
     .grid {
-      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: max(16px, calc(16 * var(--u)));
-      max-width: max(1000px, calc(1000 * var(--u)));
+      --gap: max(12px, calc(12 * var(--u)));
+      display: flex; align-items: flex-start; gap: var(--gap);
+      max-width: max(1000px, calc(1040 * var(--u)));
     }
-    .frame { position: relative; margin: 0; aspect-ratio: 4 / 5; }
-    .frame:nth-child(3n+2) { margin-top: 64px; margin-bottom: -64px; }
+    .col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+    .frame { position: relative; margin: 0; }
     .mask {
-      position: absolute; inset: 0; border-radius: 20px; overflow: hidden;
+      position: relative; border-radius: 14px; overflow: hidden;
       background: #0b0b0b; border: 1px solid #1a1a1a;
     }
-    .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
+    .frame.empty .mask { aspect-ratio: var(--r, 1); }
+    .frame img { width: 100%; height: auto; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
     .frame.in img { transform: scale(1); }
     .frame:hover img { transform: scale(1.04); transition-duration: .9s; }
     .frame figcaption { position: absolute; left: 16px; bottom: 14px; font-size: 13px; color: var(--muted); letter-spacing: 0; }
@@ -168,9 +166,9 @@
 
     /* Frames rise in and unmask as they enter */
     .js .reveal { opacity: 0; transform: translateY(80px); }
-    .js .reveal .mask { clip-path: inset(100% 0 0 0 round 20px); }
+    .js .reveal .mask { clip-path: inset(100% 0 0 0 round 14px); }
     .reveal.in { opacity: 1; transform: none; transition: opacity .9s ease var(--d,0s), transform 1.4s var(--ease-out) var(--d,0s); }
-    .reveal.in .mask { clip-path: inset(0 0 0 0 round 20px); transition: clip-path 1.4s var(--ease-out) var(--d,0s); }
+    .reveal.in .mask { clip-path: inset(0 0 0 0 round 14px); transition: clip-path 1.4s var(--ease-out) var(--d,0s); }
 
     .foot {
       display: flex; flex-wrap: wrap; gap: 28px; margin-top: 200px;
@@ -331,11 +329,8 @@
       .side::-webkit-scrollbar { display: none; }
       .side ul { flex-direction: row; gap: 22px; padding-right: 40px; }
       .side li { font-size: 14px; }
-      .rail { display: none; }
-      .marker {
-        top: auto; bottom: 4px; left: 0; width: 18px; height: 2px; margin-top: 0; border-radius: 2px; box-shadow: none;
-        transform: translateX(var(--mx-x, 0px));
-      }
+      .nav-link { padding-left: 11px; }
+      .nav-link::before { left: 0; }
       .nav-soon .tag { display: none; }
       .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 100px; z-index: 19; background: linear-gradient(#000 72%, transparent); pointer-events: none; }
 
@@ -343,10 +338,8 @@
       .headline { position: static; width: auto; max-width: none; font-size: clamp(44px, 12.4vw, 72px); line-height: 1.05; letter-spacing: -0.045em; }
 
       .collections { padding: 130px var(--gutter) 140px; }
-      .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-      .mask { border-radius: 14px; }
-      .frame:nth-child(3n+2) { margin: 0; }
-      .frame:nth-child(2n) { margin-top: 40px; margin-bottom: -40px; }
+      .grid { --gap: 6px; }
+      .mask { border-radius: 10px; }
       .foot { margin-top: 120px; gap: 20px; }
       .foot .copy { margin-left: 0; width: 100%; }
 
@@ -372,8 +365,6 @@
   <a class="name enter" href="#intro" style="--d:.05s">Gbemiga Olatubosun</a>
 
   <nav class="side" aria-label="Sections">
-    <span class="rail" aria-hidden="true"><i></i></span>
-    <span class="marker" aria-hidden="true"></span>
     <ul>
       <li class="enter" style="--d:.15s"><a class="nav-link is-active" href="#intro" data-target="intro">Intro</a></li>
       <li class="enter" style="--d:.21s"><a class="nav-link" href="#collections" data-target="collections">Collections</a></li>
@@ -454,7 +445,8 @@
       COLLECTIONS — add your images here.
       1. Put the image files in the portfolio/collections/ folder.
       2. List them below, e.g. { src: "collections/poster.jpg", alt: "Event poster", caption: "Poster, 2026" }
-      While the list is empty, six placeholder frames are shown.
+      Any shape works (square, portrait, landscape): each image keeps its own proportions,
+      Instagram-style but in a mixed-size grid. While the list is empty, placeholder frames are shown.
     */
     const COLLECTION = [];
     const EMAIL = "tubosunoluwagbemiga@gmail.com";
@@ -469,9 +461,13 @@
 
       /* ---- Collections grid ---- */
       const grid = document.getElementById("grid");
-      (COLLECTION.length ? COLLECTION : Array.from({ length: 6 }, () => null)).forEach((item, i) => {
+      const figs = [];
+      // Placeholder shapes (width / height) so the empty grid shows the mixed-size layout
+      const SHAPES = ["4/5", "1/1", "3/4", "16/10", "4/5", "9/16", "1/1", "5/4", "3/4"];
+      (COLLECTION.length ? COLLECTION : SHAPES.map(() => null)).forEach((item, i) => {
         const fig = document.createElement("figure");
         fig.className = "frame reveal" + (item ? "" : " empty");
+        if (!item) fig.style.setProperty("--r", SHAPES[i]);
         fig.style.setProperty("--d", (i % 3) * 0.12 + "s");
         fig.style.setProperty("--sd", i * 0.35 + "s");
         const mask = document.createElement("div");
@@ -479,12 +475,37 @@
         fig.appendChild(mask);
         if (item) {
           const img = document.createElement("img");
-          img.src = item.src; img.alt = item.alt || ""; img.loading = "lazy";
+          img.src = item.src; img.alt = item.alt || ""; img.decoding = "async";
           mask.appendChild(img);
           if (item.caption) { const c = document.createElement("figcaption"); c.textContent = item.caption; mask.appendChild(c); }
         } else fig.setAttribute("aria-hidden", "true");
-        grid.appendChild(fig);
+        fig._ratio = item ? 0 : (() => { const [w, h] = SHAPES[i].split("/").map(Number); return w / h; })();
+        figs.push(fig);
       });
+
+      // Masonry in reading order: each piece goes into the shortest column
+      let colCount = 0;
+      function layoutGrid(force) {
+        const n = mobile() ? 2 : 3;
+        if (n === colCount && !force) return;
+        colCount = n;
+        const cols = Array.from({ length: n }, () => { const c = document.createElement("div"); c.className = "col"; return c; });
+        const heights = new Array(n).fill(0);
+        figs.forEach((f) => {
+          const k = heights.indexOf(Math.min(...heights));
+          cols[k].appendChild(f);
+          heights[k] += 1 / (f._ratio || 1) + 0.04;
+        });
+        grid.replaceChildren(...cols);
+      }
+      figs.forEach((f) => {
+        const img = f.querySelector("img");
+        if (!img) return;
+        const set = () => { if (img.naturalWidth) { f._ratio = img.naturalWidth / img.naturalHeight; clearTimeout(layoutGrid.t); layoutGrid.t = setTimeout(() => layoutGrid(true), 60); } };
+        img.complete ? set() : img.addEventListener("load", set, { once: true });
+      });
+      layoutGrid(true);
+      addEventListener("resize", () => layoutGrid(false));
 
       /* ---- Headline word split ---- */
       document.querySelectorAll("[data-split]").forEach((el) => {
@@ -494,55 +515,22 @@
           .map((w, i) => `<span class="w" aria-hidden="true"><span style="--d:${0.35 + i * 0.045}s">${w}</span></span>`).join(" ");
       });
 
-      /* ---- Side rail: shows the move from Intro to Collections ---- */
-      const side = document.querySelector(".side");
-      const rail = side.querySelector(".rail");
-      const marker = side.querySelector(".marker");
-      const links = [...side.querySelectorAll(".nav-link")];
-      const intro = document.getElementById("intro");
-      const coll = document.getElementById("collections");
-      let ys = [0, 0], xs = [0, 0], ws = [0, 0], shown = -1, cur = 0, target = 0;
-
-      function layoutRail() {
-        const sr = side.getBoundingClientRect();
-        links.forEach((l, i) => {
-          const r = l.getBoundingClientRect();
-          ys[i] = r.top - sr.top + r.height / 2;
-          xs[i] = r.left - sr.left + side.scrollLeft; ws[i] = r.width;
-        });
-        rail.style.top = ys[0] + "px";
-        rail.style.height = (ys[1] - ys[0]) + "px";
-        target = cur = progress();
-        paint(cur);
+      /* ---- Dots: light up the section you're in ---- */
+      const links = [...document.querySelectorAll(".nav-link")];
+      const sections = links.map((l) => document.getElementById(l.dataset.target));
+      let shown = "";
+      function where() {
+        const mid = scrollY + innerHeight * 0.5;
+        let id = sections[0].id;
+        sections.forEach((sec) => { if (sec.offsetTop <= mid) id = sec.id; });
+        if (id !== shown) { shown = id; links.forEach((l) => l.classList.toggle("is-active", l.dataset.target === id)); }
       }
-      function progress() {
-        const span = coll.offsetTop - intro.offsetTop;
-        return Math.max(0, Math.min(1, (scrollY - intro.offsetTop) / (span * 0.85)));
-      }
-      function paint(p) {
-        if (mobile()) {
-          marker.style.setProperty("--mx-x", (xs[0] + (xs[1] - xs[0]) * p) + "px");
-          marker.style.width = (ws[0] + (ws[1] - ws[0]) * p) + "px";
-        } else {
-          marker.style.setProperty("--my-y", (ys[0] + (ys[1] - ys[0]) * p) + "px");
-          marker.style.width = "";
-        }
-        rail.style.setProperty("--p", p.toFixed(4));
-        const idx = p > 0.5 ? 1 : 0;
-        if (idx !== shown) { shown = idx; links.forEach((l, i) => l.classList.toggle("is-active", i === idx)); }
-      }
-      (function loop() {
-        if (!reduce) { cur += (target - cur) * 0.14; if (Math.abs(target - cur) < 0.0005) cur = target; }
-        else cur = target;
-        paint(cur);
-        requestAnimationFrame(loop);
-      })();
-      addEventListener("scroll", () => { target = progress(); }, { passive: true });
-      addEventListener("resize", layoutRail);
+      addEventListener("scroll", where, { passive: true });
+      addEventListener("resize", where);
 
       /* ---- Entrance ---- */
       let started = false;
-      const start = () => { if (!started) { started = true; layoutRail(); requestAnimationFrame(() => root.classList.add("ready")); } };
+      const start = () => { if (!started) { started = true; where(); requestAnimationFrame(() => root.classList.add("ready")); } };
       (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
       setTimeout(start, 900);
 
