@@ -115,13 +115,13 @@
       position: absolute;
       top: var(--top);
       left: calc(25% + 16 * var(--u));
-      width: max(603px, calc(603 * var(--u)));
+      width: max(820px, calc(1000 * var(--u)));
       max-width: calc(75% - 48px);
       margin: 0;
-      font-size: max(46px, calc(46 * var(--u)));
+      font-size: max(58px, calc(78 * var(--u)));
       font-weight: 400;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
+      line-height: 1.08;
+      letter-spacing: -0.035em;
       will-change: transform, opacity;
     }
     .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
@@ -190,10 +190,11 @@
       --pw: 206px; --ph: 57px;           /* pill size from Figma */
       --cw: 380px;                         /* composer width */
       position: fixed;
-      left: var(--gutter);
+      right: 32px;
       bottom: max(24px, env(safe-area-inset-bottom));
       z-index: 40;
       width: var(--cw);
+      display: flex; justify-content: flex-end;
       pointer-events: none;
     }
     .js .msg { opacity: 0; transform: translateY(16px); }
@@ -202,15 +203,15 @@
     .pill {
       position: relative;
       width: var(--pw); height: var(--ph);
-      border: 0; padding: 0; border-radius: 24px;
-      background: var(--pill);
-      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,.55); padding: 0; border-radius: 24px;
+      background: rgba(0,0,0,.25);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
       color: var(--text);
       cursor: pointer;
       overflow: hidden; isolation: isolate;
       display: grid; place-items: center;
       pointer-events: auto;
-      transition: transform .6s var(--ease-out), color .5s var(--ease-out), opacity .35s ease;
+      transition: transform .6s var(--ease-out), color .5s var(--ease-out), border-color .5s var(--ease-out), opacity .35s ease;
       will-change: transform;
     }
     .pill::before {
@@ -219,7 +220,7 @@
       background: #fff; transform: scale(0); transition: transform .7s var(--ease-out); z-index: -1;
     }
     .pill:hover::before, .pill:focus-visible::before { transform: scale(1); }
-    .pill:hover, .pill:focus-visible { color: #000; }
+    .pill:hover, .pill:focus-visible { color: #000; border-color: #fff; }
     .roll { position: relative; display: block; height: 1.2em; overflow: hidden; letter-spacing: -0.32px; }
     .roll > span { display: flex; align-items: center; justify-content: center; gap: 8px; height: 1.2em; transition: transform .6s var(--ease-out); }
     .pill:hover .roll > span, .pill:focus-visible .roll > span { transform: translateY(-100%); }
@@ -227,7 +228,7 @@
     .pill:hover svg { transform: translate(2px,-2px); }
 
     .panel {
-      position: absolute; left: 0; bottom: 0;
+      position: absolute; right: 0; bottom: 0;
       width: var(--cw);
       border-radius: 24px;
       background: rgba(16,16,16,.94);
@@ -236,7 +237,7 @@
       box-shadow: 0 30px 80px -20px rgba(0,0,0,.8);
       padding: 22px 22px 18px;
       /* Collapsed to the pill's footprint, bottom-left */
-      clip-path: inset(calc(100% - var(--ph)) calc(100% - var(--pw)) 0 0 round 24px);
+      clip-path: inset(calc(100% - var(--ph)) 0 0 calc(100% - var(--pw)) round 24px);
       opacity: 0; visibility: hidden;
       transition: clip-path .7s var(--ease-out), opacity .3s ease, visibility 0s linear .7s;
     }
@@ -254,7 +255,6 @@
     .msg.sent .p-head { display: none; }
     /* Nav steps back while the composer is open */
     .side { transition: opacity .5s var(--ease-out), filter .5s var(--ease-out); }
-    .composing .side { opacity: .18; filter: blur(2px); }
     .p-title { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -0.4px; }
     .p-sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.35; letter-spacing: -0.1px; }
     .x {
@@ -340,7 +340,7 @@
       .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 100px; z-index: 19; background: linear-gradient(#000 72%, transparent); pointer-events: none; }
 
       .intro { display: flex; align-items: center; padding: 120px var(--gutter) 120px; }
-      .headline { position: static; width: auto; max-width: none; font-size: clamp(38px, 10.6vw, 58px); letter-spacing: -0.04em; }
+      .headline { position: static; width: auto; max-width: none; font-size: clamp(44px, 12.4vw, 72px); line-height: 1.05; letter-spacing: -0.045em; }
 
       .collections { padding: 130px var(--gutter) 140px; }
       .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -350,7 +350,7 @@
       .foot { margin-top: 120px; gap: 20px; }
       .foot .copy { margin-left: 0; width: 100%; }
 
-      .msg { --cw: calc(100vw - 2 * var(--gutter)); }
+      .msg { --cw: calc(100vw - 2 * var(--gutter)); right: var(--gutter); }
     }
     @media (min-width: 861px) { .chrome-bg { display: none; } }
     @media (hover: none) { .glow { display: none; } }
