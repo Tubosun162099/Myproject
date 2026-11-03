@@ -141,9 +141,9 @@
     .row { display: flex; gap: var(--gap); }
     .frame { position: relative; margin: 0; flex: none; }
     .mask { position: absolute; inset: 0; overflow: hidden; background: #0d0d0d; }
-    .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
-    .frame.in img { transform: scale(1); }
-    .frame:hover img { transform: scale(1.04); transition-duration: .9s; }
+    .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
+    .frame.in img, .frame.in video { transform: scale(1); }
+    .frame:hover img, .frame:hover video { transform: scale(1.04); transition-duration: .9s; }
     .frame figcaption { position: absolute; left: 16px; bottom: 14px; font-size: 13px; color: var(--muted); letter-spacing: 0; }
     .frame.empty .mask::after {
       content: ""; position: absolute; inset: 0;
@@ -338,7 +338,7 @@
       *, *::before, *::after { animation: none !important; transition: none !important; }
       .js .w > span, .js .enter, .js .reveal, .js .msg { opacity: 1; transform: none; filter: none; }
       .js .reveal .mask { clip-path: none; }
-      .frame img { transform: none; }
+      .frame img, .frame video { transform: none; }
     }
   </style>
 </head>
@@ -427,13 +427,22 @@
 
   <script>
     /*
-      COLLECTIONS — add your images here.
-      1. Put the image files in the portfolio/collections/ folder.
-      2. List them below, e.g. { src: "collections/poster.jpg", alt: "Event poster", caption: "Poster, 2026" }
-      Any shape works (square, portrait, landscape): each image keeps its own proportions,
-      Instagram-style but in a mixed-size grid. While the list is empty, placeholder frames are shown.
+      COLLECTIONS — add your images and videos here, in the order they should appear.
+      1. Put the files in the portfolio/collections/ folder.
+      2. List them below:
+           image: { src: "collections/poster.jpg", alt: "Event poster", caption: "Poster, 2026" }
+           video: { video: "collections/clip.mp4", poster: "collections/clip.jpg", alt: "…" }
+         Any shape works: each piece keeps its own proportions. Add  ratio: 3/2  to force a shape.
+      Empty slots in the Figma layout are shown as placeholder frames until filled.
     */
-    const COLLECTION = [];
+    const COLLECTION = [
+      {
+        video: "collections/signup.mp4",
+        poster: "collections/signup-poster.jpg",
+        alt: "Dark sign-up form for creating an account, over moving colourful light ribbons",
+        ratio: 449 / 304,
+      },
+    ];
     const EMAIL = "tubosunoluwagbemiga@gmail.com";
 
     (function () {
@@ -446,9 +455,12 @@
       /* ---- Collections grid ---- */
       const grid = document.getElementById("grid");
       const figs = [];
+      const videos = [];
       // Placeholder shapes (width / height), taken from the Figma layout's blocks
       const SHAPES = ["449/304", "228/304", "447/304", "235/304", "447/304", "228/304", "228/304"];
-      (COLLECTION.length ? COLLECTION : SHAPES.map(() => null)).forEach((item, i) => {
+      // Real pieces first; remaining Figma slots stay as placeholders until filled
+      const slots = Array.from({ length: Math.max(SHAPES.length, COLLECTION.length) }, (_, i) => COLLECTION[i] || null);
+      slots.forEach((item, i) => {
         const fig = document.createElement("figure");
         fig.className = "frame reveal" + (item ? "" : " empty");
         fig.style.setProperty("--d", (i % 4) * 0.08 + "s");
@@ -456,13 +468,24 @@
         const mask = document.createElement("div");
         mask.className = "mask";
         fig.appendChild(mask);
-        if (item) {
+        if (item && item.video) {
+          const v = document.createElement("video");
+          v.muted = true; v.loop = true; v.playsInline = true; v.preload = "metadata";
+          v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+          if (item.poster) v.poster = item.poster;
+          v.src = item.video;
+          v.setAttribute("aria-label", item.alt || "");
+          mask.appendChild(v);
+          videos.push(v);
+        } else if (item) {
           const img = document.createElement("img");
           img.src = item.src; img.alt = item.alt || ""; img.decoding = "async";
           mask.appendChild(img);
           if (item.caption) { const c = document.createElement("figcaption"); c.textContent = item.caption; mask.appendChild(c); }
         } else fig.setAttribute("aria-hidden", "true");
-        fig._ratio = item ? 0 : (() => { const [w, h] = SHAPES[i].split("/").map(Number); return w / h; })();
+        const shape = SHAPES[i] ? (([w, h]) => w / h)(SHAPES[i].split("/").map(Number)) : 1;
+        fig._ratio = item ? (item.ratio || (item.video ? shape : 0)) : shape;
+        fig._fixed = !!(item && item.ratio);
         figs.push(fig);
       });
 
@@ -508,12 +531,22 @@
       const relayout = () => { clearTimeout(rt); rt = setTimeout(layoutGrid, 60); };
       figs.forEach((f) => {
         const img = f.querySelector("img");
-        if (!img) return;
+        if (!img || f._fixed) return;
         const set = () => { if (img.naturalWidth) { f._ratio = img.naturalWidth / img.naturalHeight; clearTimeout(layoutGrid.t); relayout(); } };
         img.complete ? set() : img.addEventListener("load", set, { once: true });
       });
       layoutGrid();
       addEventListener("resize", relayout);
+
+      // Videos play by themselves while on screen (paused off screen; still frame if motion is reduced)
+      if (!reduce && videos.length) {
+        const vio = new IntersectionObserver((es) => es.forEach((e) => {
+          const v = e.target;
+          if (e.isIntersecting) { v.preload = "auto"; const p = v.play(); if (p) p.catch(() => {}); }
+          else v.pause();
+        }), { threshold: 0.15 });
+        videos.forEach((v) => vio.observe(v));
+      }
       if (document.fonts) document.fonts.ready.then(layoutGrid);
 
       /* ---- Headline word split ---- */
