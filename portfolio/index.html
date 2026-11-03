@@ -234,6 +234,7 @@
     }
     .js .msg { opacity: 0; transform: translateY(16px); }
     .ready .msg { opacity: 1; transform: none; transition: opacity 1s var(--ease-out) 1.2s, transform 1.2s var(--ease-out) 1.2s; }
+    .settled .msg { transition: opacity .35s ease, transform .5s var(--ease-out); }
 
     .pill {
       position: relative;
@@ -391,19 +392,55 @@
       .side ul { gap: 20px; }
     }
 
+    /* Menu button: only on phones (Figma: iPhone Air - 2, 5943:20325) */
+    .menu-btn { display: none; }
+
     @media (max-width: 860px) {
-      :root { --gutter: 16px; --top: 0px; }
-      .name { top: 22px; }
-      .theme { top: 16px; right: var(--gutter); }
-      .side {
-        top: 54px; left: 0; right: 0; padding: 0 var(--gutter) 12px; overflow-x: auto; scrollbar-width: none;
-        -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent);
+      :root { --gutter: 22px; --top: 0px; }
+      .name { top: 35px; z-index: 32; }
+
+      .menu-btn {
+        display: block; position: fixed; top: 30px; right: 15px; z-index: 32;
+        width: 24px; height: 24px; padding: 0; border: 0; background: none; cursor: pointer; color: var(--text);
       }
-      .side::-webkit-scrollbar { display: none; }
-      .side ul { flex-direction: row; gap: 22px; padding-right: 40px; }
-      .side li { font-size: 14px; }
+      .menu-btn i {
+        position: absolute; left: 3px; right: 3px; height: 1.6px; border-radius: 2px; background: currentColor;
+        transition: transform .55s var(--ease-out), top .35s var(--ease-out) .1s;
+      }
+      .menu-btn i:nth-child(1) { top: 8px; }
+      .menu-btn i:nth-child(2) { top: 14.4px; }
+      .menu-open .menu-btn i { transition: top .3s var(--ease-out), transform .55s var(--ease-out) .12s; }
+      .menu-open .menu-btn i:nth-child(1) { top: 11.2px; transform: rotate(45deg); }
+      .menu-open .menu-btn i:nth-child(2) { top: 11.2px; transform: rotate(-45deg); }
+
+      /* Full-screen menu */
+      .side {
+        position: fixed; inset: 0; z-index: 31;
+        padding: 129px 27px 120px;
+        background: var(--bg);
+        overflow-y: auto;
+        visibility: hidden; opacity: 0;
+        transition: opacity .45s var(--ease-out), visibility 0s linear .45s;
+      }
+      .menu-open .side { visibility: visible; opacity: 1; transition: opacity .45s var(--ease-out), visibility 0s; }
+      .side ul { gap: 28px; }
+      .side li { font-size: 16px; }
+      .ready .side li.enter { opacity: 0; transform: translateY(18px); transition: opacity .3s ease, transform .4s var(--ease-out); }
+      .menu-open.ready .side li.enter {
+        opacity: 1; transform: none;
+        transition: opacity .6s ease calc(var(--d) * .6), transform .8s var(--ease-out) calc(var(--d) * .6);
+      }
       .nav-soon .tag { display: none; }
-      .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 100px; z-index: 19; background: linear-gradient(var(--bg) 72%, transparent); pointer-events: none; }
+
+      /* Theme switch lives in the menu on phones */
+      .theme { top: auto; bottom: max(32px, env(safe-area-inset-bottom)); right: auto; left: 27px; z-index: 32; }
+      .ready .theme.enter { opacity: 0; visibility: hidden; transform: translateY(12px); transition: opacity .3s ease, transform .4s var(--ease-out), visibility 0s linear .3s; }
+      .menu-open.ready .theme.enter { opacity: 1; visibility: visible; transform: none; transition: opacity .6s ease .35s, transform .8s var(--ease-out) .35s, visibility 0s; }
+
+      .menu-open .msg { opacity: 0 !important; transform: translateY(10px) !important; pointer-events: none; }
+      .menu-open body { overflow: hidden; }
+
+      .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 96px; z-index: 19; background: linear-gradient(var(--bg) 70%, transparent); pointer-events: none; }
 
       .intro { display: flex; align-items: center; padding: 120px var(--gutter) 120px; }
       .headline { position: static; width: auto; max-width: none; font-size: clamp(44px, 12.4vw, 72px); line-height: 1.05; letter-spacing: -0.045em; }
@@ -443,7 +480,9 @@
     </span>
   </button>
 
-  <nav class="side" aria-label="Sections">
+  <button class="menu-btn" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="side"><i></i><i></i></button>
+
+  <nav class="side" id="side" aria-label="Sections">
     <ul>
       <li class="enter" style="--d:.15s"><a class="nav-link is-active" href="#intro" data-target="intro">Intro</a></li>
       <li class="enter" style="--d:.21s"><a class="nav-link" href="#collections" data-target="collections">Collections</a></li>
@@ -666,7 +705,7 @@
 
       /* ---- Entrance ---- */
       let started = false;
-      const start = () => { if (!started) { started = true; where(); requestAnimationFrame(() => root.classList.add("ready")); } };
+      const start = () => { if (!started) { started = true; where(); requestAnimationFrame(() => root.classList.add("ready")); setTimeout(() => root.classList.add("settled"), 2600); } };
       (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
       setTimeout(start, 900);
 
@@ -702,6 +741,18 @@
       const fMsg = document.getElementById("f-msg");
       const send = form.querySelector(".send");
       const toast = document.getElementById("toast");
+
+      /* ---- Phone menu ---- */
+      const menuBtn = document.getElementById("menu-btn");
+      function setMenu(open) {
+        root.classList.toggle("menu-open", open);
+        menuBtn.setAttribute("aria-expanded", String(open));
+        menuBtn.setAttribute("aria-label", open ? "Close menu" : "Menu");
+      }
+      menuBtn.addEventListener("click", () => setMenu(!root.classList.contains("menu-open")));
+      document.querySelectorAll(".side .nav-link").forEach((a) => a.addEventListener("click", () => setMenu(false)));
+      addEventListener("keydown", (e) => { if (e.key === "Escape" && root.classList.contains("menu-open")) { setMenu(false); menuBtn.focus(); } });
+      matchMedia("(max-width: 860px)").addEventListener("change", (e) => { if (!e.matches) setMenu(false); });
 
       /* ---- Dark / light switch ---- */
       const themeBtn = document.getElementById("theme");
