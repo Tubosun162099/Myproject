@@ -54,12 +54,6 @@
     ::selection { background: #fff; color: #000; }
 
     /* ---------- Ambient ---------- */
-    .glow {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background: radial-gradient(560px circle at var(--mx, 70%) var(--my, 30%), rgba(255,255,255,0.055), transparent 60%);
-      opacity: 0; transition: opacity 1.2s ease;
-    }
-    .ready .glow { opacity: 1; }
     .grain {
       position: fixed; inset: -50%; pointer-events: none; z-index: 1; opacity: 0.05;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -213,7 +207,7 @@
       will-change: transform;
     }
     .pill::before {
-      content: ""; position: absolute; left: var(--cx,50%); top: var(--cy,50%);
+      content: ""; position: absolute; left: 50%; top: 50%;
       width: 280px; height: 280px; margin: -140px 0 0 -140px; border-radius: 50%;
       background: #fff; transform: scale(0); transition: transform .7s var(--ease-out); z-index: -1;
     }
@@ -346,7 +340,6 @@
       .msg { --cw: calc(100vw - 2 * var(--gutter)); right: var(--gutter); }
     }
     @media (min-width: 861px) { .chrome-bg { display: none; } }
-    @media (hover: none) { .glow { display: none; } }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -358,7 +351,6 @@
 </head>
 <body>
   <script>document.documentElement.classList.add("js");</script>
-  <div class="glow" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
   <div class="chrome-bg" aria-hidden="true"></div>
 
@@ -429,7 +421,7 @@
       </div>
     </div>
 
-    <button class="pill" id="pill" type="button" aria-expanded="false" aria-controls="panel" data-magnetic>
+    <button class="pill" id="pill" type="button" aria-expanded="false" aria-controls="panel">
       <span class="roll" aria-hidden="true">
         <span>Send Message</span>
         <span>Say hello <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 10L10 1M10 1H3M10 1V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
@@ -454,7 +446,6 @@
     (function () {
       const root = document.documentElement;
       const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const fine = matchMedia("(pointer: fine)").matches;
       const mobile = () => matchMedia("(max-width: 860px)").matches;
 
       document.getElementById("year").textContent = new Date().getFullYear();
@@ -556,17 +547,6 @@
         head.style.opacity = String(Math.max(0, 1 - y / (innerHeight * 0.8)));
       }, { passive: true });
 
-      /* ---- Cursor light ---- */
-      if (!reduce && fine) {
-        let mx = innerWidth * .7, my = innerHeight * .3, gx = mx, gy = my;
-        addEventListener("pointermove", (e) => { mx = e.clientX; my = e.clientY; }, { passive: true });
-        (function glow() {
-          gx += (mx - gx) * .08; gy += (my - gy) * .08;
-          root.style.setProperty("--mx", gx + "px"); root.style.setProperty("--my", gy + "px");
-          requestAnimationFrame(glow);
-        })();
-      }
-
       /* ---- Send Message composer ---- */
       const msg = document.getElementById("msg");
       const pill = document.getElementById("pill");
@@ -578,25 +558,12 @@
       const send = form.querySelector(".send");
       const toast = document.getElementById("toast");
 
-      if (!reduce && fine) {
-        pill.addEventListener("pointermove", (e) => {
-          const r = pill.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-          pill.style.setProperty("--cx", x + "px"); pill.style.setProperty("--cy", y + "px");
-          pill.style.transform = `translate(${(x - r.width / 2) * .18}px, ${(y - r.height / 2) * .3}px)`;
-        });
-        pill.addEventListener("pointerenter", (e) => {
-          const r = pill.getBoundingClientRect();
-          pill.style.setProperty("--cx", (e.clientX - r.left) + "px"); pill.style.setProperty("--cy", (e.clientY - r.top) + "px");
-        });
-        pill.addEventListener("pointerleave", () => { pill.style.transform = ""; });
-      }
 
       function open() {
         msg.classList.add("open");
         root.classList.add("composing");
         pill.setAttribute("aria-expanded", "true");
         panel.setAttribute("aria-hidden", "false");
-        pill.style.transform = "";
         setTimeout(() => (msg.classList.contains("sent") ? document.getElementById("again") : fName).focus({ preventScroll: true }), 320);
       }
       function close() {
