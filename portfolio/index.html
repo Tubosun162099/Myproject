@@ -441,8 +441,13 @@
     .theme:active .knob { width: 25px; }
     :root[data-theme="dark"] .theme:active .knob { transform: translateX(19px); }
 
-    /* Theme change: a circle of the new theme grows out of the switch */
-    ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+    /* Theme change: a soft in-place crossfade (the pattern Mobbin's examples use: Grok, Stitch, Midjourney…).
+       The outgoing theme fades with a whisper of blur while the new one settles in. */
+    ::view-transition-group(root) { animation-duration: .55s; }
+    ::view-transition-old(root) { animation: theme-out .55s cubic-bezier(.4, 0, .2, 1) both; mix-blend-mode: normal; }
+    ::view-transition-new(root) { animation: theme-in .55s cubic-bezier(.4, 0, .2, 1) both; mix-blend-mode: normal; }
+    @keyframes theme-out { to { opacity: 0; filter: blur(3px); } }
+    @keyframes theme-in { from { opacity: 0; } }
     .theming, .theming *, .theming *::before, .theming *::after {
       transition: background-color .5s ease, color .5s ease, border-color .5s ease !important;
     }
@@ -969,16 +974,7 @@
         try { localStorage.setItem("theme", next); } catch (e) {}
         if (reduce) { applyTheme(next); return; }
         if (document.startViewTransition) {
-          const r = themeBtn.getBoundingClientRect();
-          const x = r.left + r.width / 2, y = r.top + r.height / 2;
-          const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-          const vt = document.startViewTransition(() => applyTheme(next));
-          vt.ready.then(() => {
-            root.animate(
-              { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
-              { duration: 750, easing: "cubic-bezier(.65,0,.35,1)", pseudoElement: "::view-transition-new(root)" }
-            );
-          }).catch(() => {});
+          document.startViewTransition(() => applyTheme(next));
         } else {
           root.classList.add("theming");
           applyTheme(next);
