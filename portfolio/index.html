@@ -10,21 +10,70 @@
   <meta property="og:url" content="https://tubosun.site/" />
   <meta property="og:title" content="Gbemiga Olatubosun — Product Designer" />
   <meta property="og:description" content="A product designer who cares about making beautiful things that help people." />
-  <meta name="theme-color" content="#000000" />
-  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#000000" id="meta-theme" />
+  <meta name="color-scheme" content="dark light" />
+  <script>
+    /* Pick the theme before anything paints: saved choice, else the device setting */
+    (function () {
+      var t;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+      document.getElementById("meta-theme").setAttribute("content", t === "light" ? "#f6f6f4" : "#000000");
+    })();
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='32' fill='%23000'/%3E%3Ccircle cx='32' cy='32' r='9' fill='%23fff'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
-    /* Tokens from Figma: My Portfolio / Home Dark (5909:2996), a 1512px-wide frame */
-    :root {
+    /* Tokens from Figma: My Portfolio / Home Dark (5909:2996), a 1512px-wide frame.
+       Light mode mirrors them. */
+    :root, :root[data-theme="dark"] {
+      color-scheme: dark;
       --bg: #000;
       --text: #fff;
       --muted: #6a6a6a;
       --faint: rgba(106, 106, 106, 0.4);
-      --pill: rgba(255, 255, 255, 0.2);
+      --hover: #a8a8a8;
       --line: rgba(255, 255, 255, 0.14);
+      --tile: #0d0d0d;
+      --shimmer: rgba(255, 255, 255, .045);
+      --pill-border: rgba(255, 255, 255, .55);
+      --pill-bg: rgba(0, 0, 0, .25);
+      --panel: rgba(16, 16, 16, .94);
+      --panel-border: rgba(255, 255, 255, .08);
+      --shadow: rgba(0, 0, 0, .8);
+      --chip: rgba(255, 255, 255, .08);
+      --chip-hover: rgba(255, 255, 255, .16);
+      --tag-border: rgba(106, 106, 106, .35);
+      --inv-bg: #fff;
+      --inv-text: #000;
+      --grain: .05;
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f6f6f4;
+      --text: #0a0a0a;
+      --muted: #747474;
+      --faint: rgba(10, 10, 10, .24);
+      --hover: #3a3a3a;
+      --line: rgba(0, 0, 0, .14);
+      --tile: #e8e8e5;
+      --shimmer: rgba(255, 255, 255, .6);
+      --pill-border: rgba(0, 0, 0, .5);
+      --pill-bg: rgba(246, 246, 244, .4);
+      --panel: rgba(255, 255, 255, .97);
+      --panel-border: rgba(0, 0, 0, .08);
+      --shadow: rgba(0, 0, 0, .16);
+      --chip: rgba(0, 0, 0, .06);
+      --chip-hover: rgba(0, 0, 0, .1);
+      --tag-border: rgba(0, 0, 0, .18);
+      --inv-bg: #0a0a0a;
+      --inv-text: #fff;
+      --grain: .035;
+    }
+    :root {
       --ease-out: cubic-bezier(.16, 1, .3, 1);
       --ease-io: cubic-bezier(.65, 0, .35, 1);
       --spring: cubic-bezier(.34, 1.4, .64, 1);
@@ -51,11 +100,11 @@
     a { color: inherit; text-decoration: none; }
     button { font: inherit; color: inherit; letter-spacing: inherit; }
     :focus-visible { outline: 1px solid var(--text); outline-offset: 4px; border-radius: 4px; }
-    ::selection { background: #fff; color: #000; }
+    ::selection { background: var(--inv-bg); color: var(--inv-text); }
 
     /* ---------- Ambient ---------- */
     .grain {
-      position: fixed; inset: -50%; pointer-events: none; z-index: 1; opacity: 0.05;
+      position: fixed; inset: -50%; pointer-events: none; z-index: 1; opacity: var(--grain);
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       animation: grain 1.2s steps(6) infinite;
     }
@@ -76,7 +125,7 @@
 
     .nav-link { position: relative; display: inline-flex; align-items: center; color: var(--muted); transition: color .6s var(--ease-out); }
     .nav-link.is-active { color: var(--text); }
-    .nav-link:not(.is-active):hover { color: #a8a8a8; }
+    .nav-link:not(.is-active):hover { color: var(--hover); }
 
     /* Dot before the current section's name (Figma: 4px white dot, 10px gap) */
     .nav-link::before {
@@ -90,7 +139,7 @@
     .nav-soon { color: var(--faint); cursor: default; display: inline-flex; align-items: center; gap: 10px; }
     .nav-soon .tag {
       font-size: 11px; letter-spacing: .02em; text-transform: uppercase; color: var(--muted);
-      border: 1px solid rgba(106,106,106,.35); border-radius: 99px; padding: 2px 7px 1px;
+      border: 1px solid var(--tag-border); border-radius: 99px; padding: 2px 7px 1px;
       opacity: 0; transform: translateX(-6px);
       transition: opacity .35s var(--ease-out), transform .45s var(--ease-out);
     }
@@ -140,14 +189,14 @@
     }
     .row { display: flex; gap: var(--gap); }
     .frame { position: relative; margin: 0; flex: none; }
-    .mask { position: absolute; inset: 0; overflow: hidden; background: #0d0d0d; }
+    .mask { position: absolute; inset: 0; overflow: hidden; background: var(--tile); transition: background-color .5s ease; }
     .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
     .frame.in img, .frame.in video { transform: scale(1); }
     .frame:hover img, .frame:hover video { transform: scale(1.04); transition-duration: .9s; }
     .frame figcaption { position: absolute; left: 16px; bottom: 14px; font-size: 13px; color: var(--muted); letter-spacing: 0; }
     .frame.empty .mask::after {
       content: ""; position: absolute; inset: 0;
-      background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,.045) 50%, transparent 70%);
+      background: linear-gradient(105deg, transparent 30%, var(--shimmer) 50%, transparent 70%);
       transform: translateX(-100%); animation: shimmer 3.2s var(--ease-io) infinite; animation-delay: var(--sd,0s);
     }
     @keyframes shimmer { 0% { transform: translateX(-100%); } 55%,100% { transform: translateX(100%); } }
@@ -189,8 +238,8 @@
     .pill {
       position: relative;
       width: var(--pw); height: var(--ph);
-      border: 1px solid rgba(255,255,255,.55); padding: 0; border-radius: 24px;
-      background: rgba(0,0,0,.25);
+      border: 1px solid var(--pill-border); padding: 0; border-radius: 24px;
+      background: var(--pill-bg);
       -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
       color: var(--text);
       cursor: pointer;
@@ -203,10 +252,10 @@
     .pill::before {
       content: ""; position: absolute; left: 50%; top: 50%;
       width: 280px; height: 280px; margin: -140px 0 0 -140px; border-radius: 50%;
-      background: #fff; transform: scale(0); transition: transform .7s var(--ease-out); z-index: -1;
+      background: var(--inv-bg); transform: scale(0); transition: transform .7s var(--ease-out); z-index: -1;
     }
     .pill:hover::before, .pill:focus-visible::before { transform: scale(1); }
-    .pill:hover, .pill:focus-visible { color: #000; border-color: #fff; }
+    .pill:hover, .pill:focus-visible { color: var(--inv-text); border-color: var(--inv-bg); }
     .roll { position: relative; display: block; height: 1.2em; overflow: hidden; letter-spacing: -0.32px; }
     .roll > span { display: flex; align-items: center; justify-content: center; gap: 8px; height: 1.2em; transition: transform .6s var(--ease-out); }
     .pill:hover .roll > span, .pill:focus-visible .roll > span { transform: translateY(-100%); }
@@ -217,10 +266,10 @@
       position: absolute; right: 0; bottom: 0;
       width: var(--cw);
       border-radius: 24px;
-      background: rgba(16,16,16,.94);
+      background: var(--panel);
       -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%);
-      border: 1px solid rgba(255,255,255,.08);
-      box-shadow: 0 30px 80px -20px rgba(0,0,0,.8);
+      border: 1px solid var(--panel-border);
+      box-shadow: 0 30px 80px -20px var(--shadow);
       padding: 22px 22px 18px;
       /* Collapsed to the pill's footprint, bottom-left */
       clip-path: inset(calc(100% - var(--ph)) 0 0 calc(100% - var(--pw)) round 24px);
@@ -245,10 +294,10 @@
     .p-sub { margin: 6px 0 0; color: var(--muted); font-size: 14px; line-height: 1.35; letter-spacing: -0.1px; }
     .x {
       position: absolute; top: 18px; right: 18px; z-index: 1;
-      flex: none; width: 32px; height: 32px; border-radius: 50%; border: 0; background: rgba(255,255,255,.08);
+      flex: none; width: 32px; height: 32px; border-radius: 50%; border: 0; background: var(--chip);
       display: grid; place-items: center; cursor: pointer; transition: background .3s ease, transform .5s var(--ease-out);
     }
-    .x:hover { background: rgba(255,255,255,.16); transform: rotate(90deg); }
+    .x:hover { background: var(--chip-hover); transform: rotate(90deg); }
 
     .field { position: relative; display: block; margin-top: 18px; }
     .field input, .field textarea {
@@ -278,7 +327,7 @@
     .p-alt:hover { color: var(--text); }
     .send {
       position: relative; height: 44px; padding: 0 18px 0 20px; border: 0; border-radius: 99px;
-      background: #fff; color: #000; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
+      background: var(--inv-bg); color: var(--inv-text); cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
       font-weight: 500; overflow: hidden; transition: transform .5s var(--spring), opacity .3s ease;
     }
     .send:hover { transform: scale(1.04); }
@@ -290,17 +339,52 @@
     .done { display: none; padding: 6px 0 4px; }
     .msg.sent .form { display: none; }
     .msg.sent .done { display: block; }
-    .tick { width: 44px; height: 44px; border-radius: 50%; background: #fff; color: #000; display: grid; place-items: center; margin-bottom: 18px; }
+    .tick { width: 44px; height: 44px; border-radius: 50%; background: var(--inv-bg); color: var(--inv-text); display: grid; place-items: center; margin-bottom: 18px; }
     .tick path { stroke-dasharray: 24; stroke-dashoffset: 24; }
     .msg.sent .tick path { animation: draw .7s var(--ease-out) .15s forwards; }
     @keyframes draw { to { stroke-dashoffset: 0; } }
 
     .toast {
       position: fixed; left: 50%; bottom: 28px; z-index: 50; transform: translate(-50%, 20px); opacity: 0;
-      background: #fff; color: #000; border-radius: 99px; padding: 10px 16px; font-size: 14px; pointer-events: none;
+      background: var(--inv-bg); color: var(--inv-text); border-radius: 99px; padding: 10px 16px; font-size: 14px; pointer-events: none;
       transition: opacity .3s ease, transform .5s var(--ease-out);
     }
     .toast.on { opacity: 1; transform: translate(-50%, 0); }
+
+    /* ---------- Dark / light switch (top-right, level with the name) ---------- */
+    .theme {
+      position: fixed; top: 39px; right: 32px; z-index: 30;
+      width: 52px; height: 28px; padding: 0; border-radius: 99px;
+      border: 1px solid var(--pill-border); background: var(--pill-bg);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      cursor: pointer; color: var(--muted);
+      transition: border-color .4s ease, background-color .4s ease;
+    }
+    .theme:hover { border-color: var(--text); }
+    .theme .ico { position: absolute; top: 50%; width: 12px; height: 12px; margin-top: -6px; transition: opacity .4s ease, transform .6s var(--ease-out); }
+    .theme .sun { left: 7px; }
+    .theme .moon { right: 7px; }
+    .theme .knob {
+      position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 99px;
+      background: var(--text); color: var(--bg);
+      display: grid; place-items: center;
+      transition: transform .6s var(--spring), width .3s var(--ease-out), background-color .4s ease;
+    }
+    .theme .knob svg { width: 11px; height: 11px; transition: transform .6s var(--ease-out), opacity .3s ease; }
+    .theme .knob .k-sun, .theme .knob .k-moon { position: absolute; }
+    :root[data-theme="dark"] .theme .knob { transform: translateX(24px); }
+    :root[data-theme="dark"] .theme .moon { opacity: 0; transform: scale(.6); }
+    :root[data-theme="light"] .theme .sun { opacity: 0; transform: scale(.6); }
+    :root[data-theme="dark"] .theme .k-sun { opacity: 0; transform: rotate(-90deg) scale(.5); }
+    :root[data-theme="light"] .theme .k-moon { opacity: 0; transform: rotate(90deg) scale(.5); }
+    .theme:active .knob { width: 25px; }
+    :root[data-theme="dark"] .theme:active .knob { transform: translateX(19px); }
+
+    /* Theme change: a circle of the new theme grows out of the switch */
+    ::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+    .theming, .theming *, .theming *::before, .theming *::after {
+      transition: background-color .5s ease, color .5s ease, border-color .5s ease !important;
+    }
 
     /* ---------- Responsive ---------- */
     @media (max-height: 720px) and (min-width: 861px) {
@@ -310,6 +394,7 @@
     @media (max-width: 860px) {
       :root { --gutter: 16px; --top: 0px; }
       .name { top: 22px; }
+      .theme { top: 16px; right: var(--gutter); }
       .side {
         top: 54px; left: 0; right: 0; padding: 0 var(--gutter) 12px; overflow-x: auto; scrollbar-width: none;
         -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent);
@@ -318,7 +403,7 @@
       .side ul { flex-direction: row; gap: 22px; padding-right: 40px; }
       .side li { font-size: 14px; }
       .nav-soon .tag { display: none; }
-      .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 100px; z-index: 19; background: linear-gradient(#000 72%, transparent); pointer-events: none; }
+      .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 100px; z-index: 19; background: linear-gradient(var(--bg) 72%, transparent); pointer-events: none; }
 
       .intro { display: flex; align-items: center; padding: 120px var(--gutter) 120px; }
       .headline { position: static; width: auto; max-width: none; font-size: clamp(44px, 12.4vw, 72px); line-height: 1.05; letter-spacing: -0.045em; }
@@ -348,6 +433,15 @@
   <div class="chrome-bg" aria-hidden="true"></div>
 
   <a class="name enter" href="#intro" style="--d:.05s">Gbemiga Olatubosun</a>
+
+  <button class="theme enter" id="theme" type="button" role="switch" aria-label="Dark mode" style="--d:.6s">
+    <svg class="ico sun" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M6 .8v1.2M6 10v1.2M.8 6H2M10 6h1.2M2.3 2.3l.85.85M8.85 8.85l.85.85M2.3 9.7l.85-.85M8.85 3.15l.85-.85" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+    <svg class="ico moon" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M10.2 7.4A4.6 4.6 0 1 1 4.6 1.8a3.6 3.6 0 0 0 5.6 5.6Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    <span class="knob" aria-hidden="true">
+      <svg class="k-sun" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="2.2" fill="currentColor"/><path d="M6 .8v1.2M6 10v1.2M.8 6H2M10 6h1.2M2.3 2.3l.85.85M8.85 8.85l.85.85M2.3 9.7l.85-.85M8.85 3.15l.85-.85" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+      <svg class="k-moon" viewBox="0 0 12 12" fill="none"><path d="M10.2 7.4A4.6 4.6 0 1 1 4.6 1.8a3.6 3.6 0 0 0 5.6 5.6Z" fill="currentColor"/></svg>
+    </span>
+  </button>
 
   <nav class="side" aria-label="Sections">
     <ul>
@@ -608,6 +702,44 @@
       const fMsg = document.getElementById("f-msg");
       const send = form.querySelector(".send");
       const toast = document.getElementById("toast");
+
+      /* ---- Dark / light switch ---- */
+      const themeBtn = document.getElementById("theme");
+      const metaTheme = document.getElementById("meta-theme");
+      const current = () => root.getAttribute("data-theme") === "light" ? "light" : "dark";
+      const syncSwitch = () => themeBtn.setAttribute("aria-checked", current() === "dark" ? "true" : "false");
+      function applyTheme(t) {
+        root.setAttribute("data-theme", t);
+        metaTheme.setAttribute("content", t === "light" ? "#f6f6f4" : "#000000");
+        syncSwitch();
+      }
+      syncSwitch();
+      themeBtn.addEventListener("click", () => {
+        const next = current() === "dark" ? "light" : "dark";
+        try { localStorage.setItem("theme", next); } catch (e) {}
+        if (reduce) { applyTheme(next); return; }
+        if (document.startViewTransition) {
+          const r = themeBtn.getBoundingClientRect();
+          const x = r.left + r.width / 2, y = r.top + r.height / 2;
+          const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+          const vt = document.startViewTransition(() => applyTheme(next));
+          vt.ready.then(() => {
+            root.animate(
+              { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+              { duration: 750, easing: "cubic-bezier(.65,0,.35,1)", pseudoElement: "::view-transition-new(root)" }
+            );
+          }).catch(() => {});
+        } else {
+          root.classList.add("theming");
+          applyTheme(next);
+          setTimeout(() => root.classList.remove("theming"), 600);
+        }
+      });
+      // Follow the device setting until the visitor picks one
+      matchMedia("(prefers-color-scheme: light)").addEventListener("change", (e) => {
+        let saved = null; try { saved = localStorage.getItem("theme"); } catch (err) {}
+        if (!saved) applyTheme(e.matches ? "light" : "dark");
+      });
 
 
       function open() {
