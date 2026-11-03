@@ -78,18 +78,14 @@
     .nav-link.is-active { color: var(--text); }
     .nav-link:not(.is-active):hover { color: #a8a8a8; }
 
-    /* Dot beside each section name: the lit one is where you are */
+    /* Dot before the current section's name (Figma: 4px white dot, 10px gap) */
     .nav-link::before {
-      content: ""; position: absolute; left: -12px; top: 50%;
-      width: 6px; height: 6px; margin-top: -3px; border-radius: 50%;
-      background: var(--muted); opacity: .45; transform: scale(.5);
-      transition: transform .6s var(--spring), opacity .4s ease, background-color .4s ease, box-shadow .6s ease;
+      content: ""; flex: none;
+      width: 0; height: 4px; margin-right: 0; border-radius: 40px;
+      background: var(--text); opacity: 0; transform: scale(0);
+      transition: width .5s var(--ease-out), margin-right .5s var(--ease-out), opacity .35s ease, transform .55s var(--spring);
     }
-    .nav-link:hover::before { opacity: .8; }
-    .nav-link.is-active::before {
-      background: var(--text); opacity: 1; transform: scale(1);
-      box-shadow: 0 0 0 4px rgba(255,255,255,.07), 0 0 12px rgba(255,255,255,.5);
-    }
+    .nav-link.is-active::before { width: 4px; margin-right: 10px; opacity: 1; transform: scale(1); }
 
     .nav-soon { color: var(--faint); cursor: default; display: inline-flex; align-items: center; gap: 10px; }
     .nav-soon .tag {
@@ -129,25 +125,23 @@
       transition: opacity 1s var(--ease-out) var(--d,0s), transform 1.2s var(--ease-out) var(--d,0s);
     }
 
-    /* ---------- Collections: Instagram-style, mixed sizes (masonry) ---------- */
+    /* ---------- Collections: justified rows (Figma 5922:3045) ----------
+       Rows share one height (304px at the 1512 frame); each piece's width follows its own shape. */
     .collections {
       position: relative; z-index: 2;
-      padding: var(--top) 32px 200px calc(25% + 16 * var(--u));
+      padding: calc(216 * var(--u)) 0 200px calc(8.333% + 69 * var(--u));
       min-height: 100vh;
     }
     .grid {
-      --gap: max(12px, calc(12 * var(--u)));
-      display: flex; align-items: flex-start; gap: var(--gap);
-      max-width: max(1000px, calc(1040 * var(--u)));
+      --gap: 4px;
+      --row: calc(304 * var(--u));
+      width: calc(1134 * var(--u));
+      display: flex; flex-direction: column; gap: var(--gap);
     }
-    .col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
-    .frame { position: relative; margin: 0; }
-    .mask {
-      position: relative; border-radius: 14px; overflow: hidden;
-      background: #0b0b0b; border: 1px solid #1a1a1a;
-    }
-    .frame.empty .mask { aspect-ratio: var(--r, 1); }
-    .frame img { width: 100%; height: auto; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
+    .row { display: flex; gap: var(--gap); }
+    .frame { position: relative; margin: 0; flex: none; }
+    .mask { position: absolute; inset: 0; overflow: hidden; background: #0d0d0d; }
+    .frame img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
     .frame.in img { transform: scale(1); }
     .frame:hover img { transform: scale(1.04); transition-duration: .9s; }
     .frame figcaption { position: absolute; left: 16px; bottom: 14px; font-size: 13px; color: var(--muted); letter-spacing: 0; }
@@ -159,14 +153,14 @@
     @keyframes shimmer { 0% { transform: translateX(-100%); } 55%,100% { transform: translateX(100%); } }
 
     /* Frames rise in and unmask as they enter */
-    .js .reveal { opacity: 0; transform: translateY(80px); }
-    .js .reveal .mask { clip-path: inset(100% 0 0 0 round 14px); }
+    .js .reveal { opacity: 0; transform: translateY(40px); }
+    .js .reveal .mask { clip-path: inset(100% 0 0 0); }
     .reveal.in { opacity: 1; transform: none; transition: opacity .9s ease var(--d,0s), transform 1.4s var(--ease-out) var(--d,0s); }
-    .reveal.in .mask { clip-path: inset(0 0 0 0 round 14px); transition: clip-path 1.4s var(--ease-out) var(--d,0s); }
+    .reveal.in .mask { clip-path: inset(0 0 0 0); transition: clip-path 1.4s var(--ease-out) var(--d,0s); }
 
     .foot {
       display: flex; flex-wrap: wrap; gap: 28px; margin-top: 200px;
-      max-width: max(1000px, calc(1000 * var(--u))); color: var(--muted);
+      width: calc(1134 * var(--u)); color: var(--muted);
     }
     .foot a { position: relative; transition: color .4s var(--ease-out); }
     .foot a::after {
@@ -323,8 +317,6 @@
       .side::-webkit-scrollbar { display: none; }
       .side ul { flex-direction: row; gap: 22px; padding-right: 40px; }
       .side li { font-size: 14px; }
-      .nav-link { padding-left: 11px; }
-      .nav-link::before { left: 0; }
       .nav-soon .tag { display: none; }
       .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 100px; z-index: 19; background: linear-gradient(#000 72%, transparent); pointer-events: none; }
 
@@ -332,8 +324,9 @@
       .headline { position: static; width: auto; max-width: none; font-size: clamp(44px, 12.4vw, 72px); line-height: 1.05; letter-spacing: -0.045em; }
 
       .collections { padding: 130px var(--gutter) 140px; }
-      .grid { --gap: 6px; }
-      .mask { border-radius: 10px; }
+      .collections { padding-left: var(--gutter); padding-right: var(--gutter); }
+      .grid, .foot { width: 100%; }
+      .grid { --gap: 3px; --row: 150px; }
       .foot { margin-top: 120px; gap: 20px; }
       .foot .copy { margin-left: 0; width: 100%; }
 
@@ -453,13 +446,12 @@
       /* ---- Collections grid ---- */
       const grid = document.getElementById("grid");
       const figs = [];
-      // Placeholder shapes (width / height) so the empty grid shows the mixed-size layout
-      const SHAPES = ["4/5", "1/1", "3/4", "16/10", "4/5", "9/16", "1/1", "5/4", "3/4"];
+      // Placeholder shapes (width / height), taken from the Figma layout's blocks
+      const SHAPES = ["449/304", "228/304", "447/304", "235/304", "447/304", "228/304", "228/304"];
       (COLLECTION.length ? COLLECTION : SHAPES.map(() => null)).forEach((item, i) => {
         const fig = document.createElement("figure");
         fig.className = "frame reveal" + (item ? "" : " empty");
-        if (!item) fig.style.setProperty("--r", SHAPES[i]);
-        fig.style.setProperty("--d", (i % 3) * 0.12 + "s");
+        fig.style.setProperty("--d", (i % 4) * 0.08 + "s");
         fig.style.setProperty("--sd", i * 0.35 + "s");
         const mask = document.createElement("div");
         mask.className = "mask";
@@ -474,29 +466,55 @@
         figs.push(fig);
       });
 
-      // Masonry in reading order: each piece goes into the shortest column
-      let colCount = 0;
-      function layoutGrid(force) {
-        const n = mobile() ? 2 : 3;
-        if (n === colCount && !force) return;
-        colCount = n;
-        const cols = Array.from({ length: n }, () => { const c = document.createElement("div"); c.className = "col"; return c; });
-        const heights = new Array(n).fill(0);
+      // Justified rows: fill each row edge to edge at roughly the target height
+      function layoutGrid() {
+        const W = grid.clientWidth;
+        const cs = getComputedStyle(grid);
+        const gap = parseFloat(cs.getPropertyValue("--gap")) || 4;
+        const probe = document.createElement("div");
+        probe.style.cssText = "position:absolute;visibility:hidden;height:var(--row)";
+        grid.appendChild(probe);
+        const H = probe.getBoundingClientRect().height || 304;
+        probe.remove();
+        const rows = [];
+        let row = [], sum = 0;
+        // Close a row when it reaches the width, breaking where its height lands closest to the target
         figs.forEach((f) => {
-          const k = heights.indexOf(Math.min(...heights));
-          cols[k].appendChild(f);
-          heights[k] += 1 / (f._ratio || 1) + 0.04;
+          const r = f._ratio || 1;
+          row.push(f); sum += r;
+          if (sum * H + gap * (row.length - 1) < W) return;
+          const hWith = (W - gap * (row.length - 1)) / sum;
+          const hWithout = row.length > 1 ? (W - gap * (row.length - 2)) / (sum - r) : Infinity;
+          if (Math.abs(hWithout - H) < Math.abs(hWith - H)) {
+            row.pop(); rows.push([row, sum - r, true]); row = [f]; sum = r;
+          } else { rows.push([row, sum, true]); row = []; sum = 0; }
         });
-        grid.replaceChildren(...cols);
+        if (row.length) rows.push([row, sum, false]);
+        const out = rows.map(([items, total, full]) => {
+          const el = document.createElement("div");
+          el.className = "row";
+          // Full rows scale to fit the width exactly; a short last row keeps the target height
+          const h = full ? (W - gap * (items.length - 1)) / total : H;
+          items.forEach((f) => {
+            f.style.height = h + "px";
+            f.style.width = (h * (f._ratio || 1)) + "px";
+            el.appendChild(f);
+          });
+          return el;
+        });
+        grid.replaceChildren(...out);
       }
+      let rt;
+      const relayout = () => { clearTimeout(rt); rt = setTimeout(layoutGrid, 60); };
       figs.forEach((f) => {
         const img = f.querySelector("img");
         if (!img) return;
-        const set = () => { if (img.naturalWidth) { f._ratio = img.naturalWidth / img.naturalHeight; clearTimeout(layoutGrid.t); layoutGrid.t = setTimeout(() => layoutGrid(true), 60); } };
+        const set = () => { if (img.naturalWidth) { f._ratio = img.naturalWidth / img.naturalHeight; clearTimeout(layoutGrid.t); relayout(); } };
         img.complete ? set() : img.addEventListener("load", set, { once: true });
       });
-      layoutGrid(true);
-      addEventListener("resize", () => layoutGrid(false));
+      layoutGrid();
+      addEventListener("resize", relayout);
+      if (document.fonts) document.fonts.ready.then(layoutGrid);
 
       /* ---- Headline word split ---- */
       document.querySelectorAll("[data-split]").forEach((el) => {
