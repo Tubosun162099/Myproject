@@ -199,6 +199,63 @@
     .frame.in img, .frame.in video { transform: scale(1); }
     .frame:hover img, .frame:hover video { transform: scale(1.04); transition-duration: .9s; }
     .frame figcaption { position: absolute; left: 16px; bottom: 14px; font-size: 13px; color: var(--muted); letter-spacing: 0; }
+
+    /* Clickable pieces */
+    .frame.open-able { cursor: zoom-in; }
+    .frame.open-able:focus-visible { outline: 1px solid var(--text); outline-offset: 3px; }
+    .frame .view {
+      position: absolute; right: 12px; bottom: 12px; z-index: 2;
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 12px 7px 11px; border-radius: 99px; font-size: 13px; letter-spacing: -0.1px;
+      color: #fff; background: rgba(0,0,0,.45); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,.14);
+      opacity: 0; transform: translateY(6px); transition: opacity .35s ease, transform .5s var(--ease-out);
+      pointer-events: none;
+    }
+    .frame.open-able:hover .view, .frame.open-able:focus-visible .view { opacity: 1; transform: none; }
+    @media (hover: none) { .frame .view { opacity: 1; transform: none; padding: 6px; } .frame .view b { display: none; } }
+
+    /* Full-screen viewer */
+    .lb {
+      position: fixed; inset: 0; z-index: 60;
+      display: grid; place-items: center;
+      visibility: hidden; pointer-events: none;
+    }
+    .lb.on { visibility: visible; pointer-events: auto; }
+    .lb-bg { position: absolute; inset: 0; background: var(--bg); opacity: 0; transition: opacity .5s var(--ease-out); }
+    .lb.on .lb-bg { opacity: 1; }
+    .lb-stage { position: relative; width: min(92vw, 1400px); height: min(78vh, 900px); display: grid; place-items: center; }
+    .lb-media { position: relative; max-width: 100%; max-height: 100%; overflow: hidden; transform-origin: 0 0; }
+    .lb-media img, .lb-media video { display: block; max-width: min(92vw, 1400px); max-height: min(78vh, 900px); width: auto; height: auto; }
+    .lb-ui { opacity: 0; transition: opacity .35s ease; }
+    .lb.on.shown .lb-ui { opacity: 1; transition-delay: .15s; }
+    .lb-close, .lb-nav {
+      position: absolute; z-index: 2; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--pill-border);
+      background: var(--pill-bg); color: var(--text); display: grid; place-items: center; cursor: pointer;
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      transition: border-color .3s ease, transform .5s var(--ease-out), opacity .35s ease;
+    }
+    .lb-close:hover, .lb-nav:hover { border-color: var(--text); }
+    .lb-close { top: 30px; right: 32px; }
+    .lb-close:hover { transform: rotate(90deg); }
+    .lb-nav { top: 50%; margin-top: -22px; }
+    .lb-prev { left: 32px; } .lb-next { right: 32px; }
+    .lb-prev:hover { transform: translateX(-3px); } .lb-next:hover { transform: translateX(3px); }
+    .lb-nav[hidden] { display: none; }
+    .lb-cap {
+      position: absolute; left: 0; right: 0; bottom: 34px; text-align: center; color: var(--muted); font-size: 14px; letter-spacing: -0.1px;
+      padding: 0 90px;
+    }
+    .lb-count { color: var(--faint); margin-left: 10px; }
+    @media (max-width: 860px) {
+      .lb-stage { width: 100vw; height: 70vh; }
+      .lb-media img, .lb-media video { max-width: 100vw; max-height: 70vh; }
+      .lb-close { top: 22px; right: 15px; }
+      .lb-nav { top: auto; bottom: 24px; margin: 0; }
+      .lb-prev { left: 22px; } .lb-next { right: 22px; }
+      .lb-cap { bottom: 36px; padding: 0 80px; font-size: 13px; }
+    }
+    .lb-open, .lb-open body { overflow: hidden; }
     .frame.empty .mask::after {
       content: ""; position: absolute; inset: 0;
       background: linear-gradient(105deg, transparent 30%, var(--shimmer) 50%, transparent 70%);
@@ -556,6 +613,21 @@
     </button>
   </div>
 
+  <div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Collection viewer" aria-hidden="true">
+    <div class="lb-bg" data-close></div>
+    <div class="lb-stage" data-close><div class="lb-media" id="lb-media"></div></div>
+    <button class="lb-close lb-ui" type="button" aria-label="Close" data-close>
+      <svg width="14" height="14" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </button>
+    <button class="lb-nav lb-prev lb-ui" type="button" aria-label="Previous" id="lb-prev">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8l5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="lb-nav lb-next lb-ui" type="button" aria-label="Next" id="lb-next">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="lb-cap lb-ui" id="lb-cap"></p>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -566,6 +638,8 @@
            image: { src: "collections/poster.jpg", alt: "Event poster", caption: "Poster, 2026" }
            video: { video: "collections/clip.mp4", poster: "collections/clip.jpg", alt: "…" }
          Any shape works: each piece keeps its own proportions. Add  ratio: 3/2  to force a shape.
+         Every piece opens full screen when clicked. Add  href: "https://…"  to make it a link instead,
+         and  caption: "…"  to show a line of text under it in the viewer.
       Empty slots in the Figma layout are shown as placeholder frames until filled.
     */
     const COLLECTION = [
@@ -616,10 +690,135 @@
           mask.appendChild(img);
           if (item.caption) { const c = document.createElement("figcaption"); c.textContent = item.caption; mask.appendChild(c); }
         } else fig.setAttribute("aria-hidden", "true");
+        if (item) {
+          fig.classList.add("open-able");
+          fig.tabIndex = 0;
+          fig.setAttribute("role", item.href ? "link" : "button");
+          fig.setAttribute("aria-label", (item.href ? "Open " : "View ") + (item.alt || "piece"));
+          const chip = document.createElement("span");
+          chip.className = "view"; chip.setAttribute("aria-hidden", "true");
+          chip.innerHTML = item.href
+            ? '<svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1 10L10 1M10 1H3M10 1V8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg><b>Open</b>'
+            : '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M7.5 1h3.5v3.5M4.5 11H1V7.5M11 1L7 5M1 11l4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg><b>View</b>';
+          fig.appendChild(chip);
+          fig._item = item;
+          const go = () => item.href ? window.open(item.href, "_blank", "noopener") : openViewer(fig);
+          fig.addEventListener("click", go);
+          fig.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+        }
         const shape = SHAPES[i] ? (([w, h]) => w / h)(SHAPES[i].split("/").map(Number)) : 1;
         fig._ratio = item ? (item.ratio || (item.video ? shape : 0)) : shape;
         fig._fixed = !!(item && item.ratio);
         figs.push(fig);
+      });
+
+      /* ---- Full-screen viewer for collection pieces ---- */
+      const lb = document.getElementById("lb");
+      const lbMedia = document.getElementById("lb-media");
+      const lbCap = document.getElementById("lb-cap");
+      const lbPrev = document.getElementById("lb-prev");
+      const lbNext = document.getElementById("lb-next");
+      const viewable = () => figs.filter((f) => f._item && !f._item.href);
+      let lbFig = null, lbBusy = false;
+
+      function mediaFor(item) {
+        if (item.video) {
+          const v = document.createElement("video");
+          v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = !reduce;
+          v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
+          if (item.poster) v.poster = item.poster;
+          v.src = item.video; v.setAttribute("aria-label", item.alt || "");
+          return v;
+        }
+        const img = document.createElement("img");
+        img.src = item.src; img.alt = item.alt || "";
+        return img;
+      }
+      const ready = (el) => new Promise((res) => {
+        if (el.tagName === "VIDEO") { if (el.readyState >= 1) res(); else { el.addEventListener("loadedmetadata", res, { once: true }); setTimeout(res, 1200); } }
+        else if (el.complete && el.naturalWidth) res(); else { el.addEventListener("load", res, { once: true }); el.addEventListener("error", res, { once: true }); }
+      });
+      // Animate the media between the tile's box and its place in the viewer (FLIP)
+      // The tile shows the piece cropped to its slot ("cover"); grow it by uncropping, never stretching
+      function flip(fromRect, toRect, dir) {
+        const s = Math.max(fromRect.width / toRect.width, fromRect.height / toRect.height);
+        const ix = Math.max(0, (toRect.width - fromRect.width / s) / 2);
+        const iy = Math.max(0, (toRect.height - fromRect.height / s) / 2);
+        const dx = fromRect.left - toRect.left - ix * s, dy = fromRect.top - toRect.top - iy * s;
+        const start = { transform: `translate(${dx}px, ${dy}px) scale(${s})`, clipPath: `inset(${iy}px ${ix}px ${iy}px ${ix}px)` };
+        const end = { transform: "translate(0px, 0px) scale(1)", clipPath: "inset(0px 0px 0px 0px)" };
+        return lbMedia.animate(dir === "in" ? [start, end] : [end, start],
+          { duration: reduce ? 0 : 650, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }).finished;
+      }
+      function setUi(fig) {
+        const list = viewable(), i = list.indexOf(fig);
+        const item = fig._item;
+        lbCap.innerHTML = "";
+        lbCap.append(document.createTextNode(item.caption || ""));
+        if (list.length > 1) {
+          const c = document.createElement("span"); c.className = "lb-count"; c.textContent = `${i + 1} / ${list.length}`; lbCap.append(c);
+        }
+        lbPrev.hidden = lbNext.hidden = list.length < 2;
+      }
+      async function openViewer(fig) {
+        if (lbBusy) return; lbBusy = true;
+        lbFig = fig;
+        const el = mediaFor(fig._item);
+        lbMedia.replaceChildren(el);
+        setUi(fig);
+        lb.classList.add("on"); lb.setAttribute("aria-hidden", "false"); root.classList.add("lb-open");
+        await ready(el);
+        const to = lbMedia.getBoundingClientRect(), from = fig.getBoundingClientRect();
+        lbMedia.style.borderRadius = "0";
+        fig.style.visibility = "hidden";
+        requestAnimationFrame(() => lb.classList.add("shown"));
+        if (el.tagName === "VIDEO" && !reduce) { const p = el.play(); if (p) p.catch(() => {}); }
+        await flip(from, to, "in");
+        lbBusy = false;
+        lb.querySelector(".lb-close").focus({ preventScroll: true });
+      }
+      async function closeViewer() {
+        if (!lbFig || lbBusy) return; lbBusy = true;
+        const fig = lbFig;
+        lb.classList.remove("shown");
+        const to = lbMedia.getBoundingClientRect(), from = fig.getBoundingClientRect();
+        lb.querySelector(".lb-bg").style.opacity = "0";
+        await flip(from, to, "out");
+        fig.style.visibility = "";
+        lb.classList.remove("on"); lb.setAttribute("aria-hidden", "true"); root.classList.remove("lb-open");
+        lb.querySelector(".lb-bg").style.opacity = "";
+        lbMedia.getAnimations().forEach((a) => a.cancel());
+        lbMedia.replaceChildren();
+        lbFig = null; lbBusy = false;
+        fig.focus({ preventScroll: true });
+      }
+      async function step(d) {
+        const list = viewable(); if (list.length < 2 || lbBusy || !lbFig) return;
+        lbBusy = true;
+        const next = list[(list.indexOf(lbFig) + d + list.length) % list.length];
+        await lbMedia.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: `translateX(${-d * 40}px)` }], { duration: reduce ? 0 : 220, easing: "ease-in", fill: "forwards" }).finished;
+        lbFig.style.visibility = ""; next.style.visibility = "hidden";
+        lbFig = next;
+        const el = mediaFor(next._item); lbMedia.getAnimations().forEach((a) => a.cancel());
+        lbMedia.replaceChildren(el); setUi(next);
+        await ready(el);
+        await lbMedia.animate([{ opacity: 0, transform: `translateX(${d * 40}px)` }, { opacity: 1, transform: "none" }], { duration: reduce ? 0 : 420, easing: "cubic-bezier(.16,1,.3,1)" }).finished;
+        lbBusy = false;
+      }
+      lb.addEventListener("click", (e) => { if (e.target.closest("[data-close]") && !e.target.closest(".lb-media")) closeViewer(); });
+      lbPrev.addEventListener("click", () => step(-1));
+      lbNext.addEventListener("click", () => step(1));
+      addEventListener("keydown", (e) => {
+        if (!lbFig) return;
+        if (e.key === "Escape") { e.stopImmediatePropagation(); closeViewer(); }
+        else if (e.key === "ArrowRight") step(1);
+        else if (e.key === "ArrowLeft") step(-1);
+      }, true);
+      let tx = null;
+      lb.addEventListener("touchstart", (e) => { tx = e.touches[0].clientX; }, { passive: true });
+      lb.addEventListener("touchend", (e) => {
+        if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; tx = null;
+        if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
       });
 
       // Justified rows: fill each row edge to edge at roughly the target height
