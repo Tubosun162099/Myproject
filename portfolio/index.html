@@ -4,12 +4,12 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Gbemiga Olatubosun — Product Designer</title>
-  <meta name="description" content="Gbemiga Olatubosun is a product designer who cares about making beautiful things that help people." />
+  <meta name="description" content="Gbemiga Olatubosun is a product designer who cares about intent in digital interfaces, so everyone has a better experience at every touchpoint." />
   <link rel="canonical" href="https://tubosun.site/" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://tubosun.site/" />
   <meta property="og:title" content="Gbemiga Olatubosun — Product Designer" />
-  <meta property="og:description" content="A product designer who cares about making beautiful things that help people." />
+  <meta property="og:description" content="A product designer who cares about intent in digital interfaces." />
   <meta name="theme-color" content="#000000" id="meta-theme" />
   <meta name="color-scheme" content="dark light" />
   <script>
@@ -164,6 +164,14 @@
       line-height: 1.08;
       letter-spacing: -0.035em;
       will-change: transform, opacity;
+    }
+    .headline h1 { margin: 0; font: inherit; letter-spacing: inherit; }
+    .hl-sub {
+      margin: max(28px, calc(40 * var(--u))) 0 0;
+      max-width: max(620px, calc(760 * var(--u)));
+      font-size: max(22px, calc(30 * var(--u)));
+      line-height: 1.3; letter-spacing: -0.02em;
+      color: var(--muted);
     }
     .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .08em; margin-bottom: -.08em; }
     .w > span { display: inline-block; }
@@ -509,6 +517,7 @@
 
       .intro { display: flex; align-items: center; padding: 120px var(--gutter) 120px; }
       .headline { position: static; width: auto; max-width: none; font-size: clamp(44px, 12.4vw, 72px); line-height: 1.05; letter-spacing: -0.045em; }
+      .hl-sub { margin-top: 24px; max-width: none; font-size: clamp(19px, 5vw, 24px); line-height: 1.32; }
 
       .collections { padding: 130px var(--gutter) 140px; }
       .collections { padding-left: var(--gutter); padding-right: var(--gutter); }
@@ -563,7 +572,10 @@
 
   <main>
     <section class="intro" id="intro" aria-label="Intro">
-      <h1 class="headline" data-split>Hello there, I’m a product designer who cares about making beautiful things that help people.</h1>
+      <div class="headline">
+        <h1 data-split>Hi there, I am a product designer who cares about intent in digital interfaces.</h1>
+        <p class="hl-sub" data-split data-delay="0.95" data-step="0.03">That care helps everyone have a better experience at every touchpoint.</p>
+      </div>
     </section>
 
     <section class="collections" id="collections" aria-label="Collections">
@@ -890,8 +902,9 @@
       document.querySelectorAll("[data-split]").forEach((el) => {
         const text = el.textContent.trim();
         el.setAttribute("aria-label", text);
+        const d0 = parseFloat(el.dataset.delay || "0.35"), step = parseFloat(el.dataset.step || "0.045");
         el.innerHTML = text.split(/\s+/)
-          .map((w, i) => `<span class="w" aria-hidden="true"><span style="--d:${0.35 + i * 0.045}s">${w}</span></span>`).join(" ");
+          .map((w, i) => `<span class="w" aria-hidden="true"><span style="--d:${(d0 + i * step).toFixed(3)}s">${w}</span></span>`).join(" ");
       });
 
       /* ---- Dots: light up the section you're in ---- */
