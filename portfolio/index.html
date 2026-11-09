@@ -10,10 +10,6 @@
   <meta property="og:url" content="https://tubosun.site/" />
   <meta property="og:title" content="Gbemiga Olatubosun — Product Designer" />
   <meta property="og:description" content="A product designer who cares about intent in digital interfaces." />
-  <meta property="og:image" content="https://tubosun.site/assets/og.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#f1ece2" id="meta-theme" />
   <meta name="color-scheme" content="dark light" />
   <script>
@@ -127,16 +123,7 @@
     .name {
       position: fixed; top: 44px; left: var(--gutter); z-index: 20;
       font-weight: 500; letter-spacing: -0.32px; white-space: nowrap;
-      display: inline-flex; align-items: center; gap: 10px;
     }
-    /* Avatar before the name, vertically centred on it */
-    .avi {
-      flex: none; width: 32px; height: 32px; margin: -8px 0; border-radius: 50%;
-      object-fit: cover; display: block;
-      box-shadow: 0 0 0 1px var(--line);
-      transition: transform .5s var(--spring);
-    }
-    .name:hover .avi { transform: scale(1.08); }
 
     .side { position: fixed; top: var(--top); left: var(--gutter); z-index: 20; }
     .side ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 28px; }
@@ -551,7 +538,7 @@
   <div class="grain" aria-hidden="true"></div>
   <div class="chrome-bg" aria-hidden="true"></div>
 
-  <a class="name enter" href="#intro" style="--d:.05s"><img class="avi" src="assets/avatar.jpg" alt="" width="32" height="32" />Gbemiga Olatubosun</a>
+  <a class="name enter" href="#intro" style="--d:.05s">Gbemiga Olatubosun</a>
 
   <button class="theme enter" id="theme" type="button" role="switch" aria-label="Dark mode" style="--d:.6s">
     <svg class="ico sun" viewBox="0 0 12 12" fill="none" aria-hidden="true"><circle cx="6" cy="6" r="2.2" stroke="currentColor" stroke-width="1.2"/><path d="M6 .8v1.2M6 10v1.2M.8 6H2M10 6h1.2M2.3 2.3l.85.85M8.85 8.85l.85.85M2.3 9.7l.85-.85M8.85 3.15l.85-.85" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
