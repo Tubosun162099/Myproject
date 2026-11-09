@@ -10,14 +10,14 @@
   <meta property="og:url" content="https://tubosun.site/" />
   <meta property="og:title" content="Gbemiga Olatubosun — Product Designer" />
   <meta property="og:description" content="A product designer who cares about intent in digital interfaces." />
-  <meta name="theme-color" content="#000000" id="meta-theme" />
+  <meta name="theme-color" content="#f1ece2" id="meta-theme" />
   <meta name="color-scheme" content="dark light" />
   <script>
     /* Pick the theme before anything paints: saved choice, else the device setting */
     (function () {
       var t;
       try { t = localStorage.getItem("theme"); } catch (e) {}
-      if (t !== "light" && t !== "dark") t = matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      if (t !== "light" && t !== "dark") t = "light";   /* light (paper) is the default */
       document.documentElement.setAttribute("data-theme", t);
       document.getElementById("meta-theme").setAttribute("content", t === "light" ? "#f1ece2" : "#000000");
     })();
@@ -154,7 +154,7 @@
     .intro { position: relative; z-index: 2; height: 100vh; height: 100svh; min-height: 560px; }
     .headline {
       position: absolute;
-      top: var(--top);
+      top: max(150px, calc(170 * var(--u)));   /* raised above the nav line */
       left: calc(25% + 16 * var(--u));
       width: max(820px, calc(1000 * var(--u)));
       max-width: calc(75% - 48px);
@@ -510,7 +510,7 @@
 
       .chrome-bg { position: fixed; top: 0; left: 0; right: 0; height: 96px; z-index: 19; background: linear-gradient(var(--bg) 70%, transparent); pointer-events: none; }
 
-      .intro { display: flex; align-items: center; padding: 120px var(--gutter) 120px; }
+      .intro { display: flex; align-items: flex-start; padding: 150px var(--gutter) 120px; }
       .headline { position: static; width: auto; max-width: none; font-size: var(--hl-fs, clamp(40px, 11vw, 64px)); line-height: 1.05; letter-spacing: -0.045em; }
 
       .collections { padding: 130px var(--gutter) 140px; }
@@ -1018,10 +1018,6 @@
         }
       });
       // Follow the device setting until the visitor picks one
-      matchMedia("(prefers-color-scheme: light)").addEventListener("change", (e) => {
-        let saved = null; try { saved = localStorage.getItem("theme"); } catch (err) {}
-        if (!saved) applyTheme(e.matches ? "light" : "dark");
-      });
 
 
       function open() {
