@@ -192,14 +192,15 @@
       min-height: 100vh;
     }
     .grid {
-      --gap: 4px;
+      --gap: 8px;
       --row: calc(304 * var(--u));
       width: calc(1134 * var(--u));
       display: flex; flex-direction: column; gap: var(--gap);
     }
     .row { display: flex; gap: var(--gap); }
     .frame { position: relative; margin: 0; flex: none; }
-    .mask { position: absolute; inset: 0; overflow: hidden; background: var(--tile); transition: background-color .5s ease; }
+    .mask { position: absolute; inset: 0; overflow: hidden; border-radius: var(--radius, 16px); background: var(--tile); transition: background-color .5s ease; }
+    .frame:focus-visible { border-radius: var(--radius, 16px); }
     .frame img, .frame video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.14); transition: transform 1.8s var(--ease-out); }
     .frame.in img, .frame.in video { transform: scale(1); }
     .frame:hover img, .frame:hover video { transform: scale(1.04); transition-duration: .9s; }
@@ -270,9 +271,9 @@
 
     /* Frames rise in and unmask as they enter */
     .js .reveal { opacity: 0; transform: translateY(40px); }
-    .js .reveal .mask { clip-path: inset(100% 0 0 0); }
+    .js .reveal .mask { clip-path: inset(100% 0 0 0 round var(--radius, 16px)); }
     .reveal.in { opacity: 1; transform: none; transition: opacity .9s ease var(--d,0s), transform 1.4s var(--ease-out) var(--d,0s); }
-    .reveal.in .mask { clip-path: inset(0 0 0 0); transition: clip-path 1.4s var(--ease-out) var(--d,0s); }
+    .reveal.in .mask { clip-path: inset(0 0 0 0 round var(--radius, 16px)); transition: clip-path 1.4s var(--ease-out) var(--d,0s); }
 
     .foot {
       display: flex; flex-wrap: wrap; gap: 28px; margin-top: 200px;
@@ -518,7 +519,8 @@
       .collections { padding: 130px var(--gutter) 140px; }
       .collections { padding-left: var(--gutter); padding-right: var(--gutter); }
       .grid, .foot { width: 100%; }
-      .grid { --gap: 3px; --row: 150px; }
+      .grid { --radius: 10px; }
+      .grid { --gap: 6px; --row: 150px; }
       .foot { margin-top: 120px; gap: 20px; }
       .foot .copy { margin-left: 0; width: 100%; }
 
@@ -800,7 +802,7 @@
         lb.classList.add("on"); lb.setAttribute("aria-hidden", "false"); root.classList.add("lb-open");
         await ready(el);
         const to = lbMedia.getBoundingClientRect(), from = fig.getBoundingClientRect();
-        lbMedia.style.borderRadius = "0";
+        lbMedia.style.borderRadius = "18px";
         fig.style.visibility = "hidden";
         requestAnimationFrame(() => lb.classList.add("shown"));
         if (el.tagName === "VIDEO" && !reduce) { const p = el.play(); if (p) p.catch(() => {}); }
