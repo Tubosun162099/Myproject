@@ -40,8 +40,16 @@ body {
 
 .container { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
 
-header h1 { margin: 0 0 4px; font-size: 1.6rem; }
-header p { margin: 0 0 20px; color: var(--muted); }
+header h1 { margin: 0 0 8px; font-size: clamp(1.6rem, 4vw, 2.1rem); line-height: 1.2; }
+header p { margin: 0 0 20px; color: var(--muted); max-width: 60ch; }
+header .eyebrow {
+  margin: 0 0 6px;
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
 
 .how summary { cursor: pointer; font-weight: 700; font-size: 1.1rem; }
 .how ol { margin: 12px 0 0; padding-left: 20px; }

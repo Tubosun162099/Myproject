@@ -205,10 +205,12 @@ export default function Home() {
   return (
     <main className="container">
       <header>
-        <h1>NHS Supporting Statement Builder</h1>
+        <p className="eyebrow">NHS Supporting Statement Builder · for nurses</p>
+        <h1>Write a supporting statement that gets you shortlisted</h1>
         <p>
-          Save your nursing profile once, then paste any job description to get a tailored,
-          ATS-optimised 1,200 to 1,500 word supporting statement.
+          Enter your nursing experience once. For each job, paste the advert and get a 1,200 to
+          1,500 word statement that answers every point on the person specification, using the
+          words shortlisters and screening software look for.
         </p>
       </header>
 
