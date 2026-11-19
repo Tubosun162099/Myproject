@@ -28,6 +28,8 @@ export const VIDEO_MODEL = process.env.VIDEO_MODEL || "sora-2";
 /** Turns OpenAI errors into a plain sentence for the admin page. */
 export function explain(err: unknown): string {
   if (err instanceof OpenAI.APIError) {
+    console.error("OpenAI error", err.status, err.requestID, err.message);
+    if (err.status === 404) return "OpenAI couldn't find the video model for this key (404). Usually this means video generation (Sora) isn't enabled for this OpenAI account or project. See the connection check above.";
     if (err.status === 401) return "OpenAI rejected the API key. Check OPENAI_API_KEY in Vercel.";
     if (err.status === 429) return "OpenAI says you are out of credit or sending too many requests. Check billing on platform.openai.com.";
     if (err.status === 403) return "This OpenAI account doesn't have access to video generation yet.";

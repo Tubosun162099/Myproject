@@ -31,6 +31,7 @@ export default function Admin() {
   const [authed, setAuthed] = useState(false);
   const [saved, setSaved] = useState<Saved>({ exercise: {}, equipment: {} });
   const [setupProblem, setSetupProblem] = useState<string | null>(null);
+  const [check, setCheck] = useState<{ ok: boolean; message: string; keyHint?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [jobs, setJobs] = useState<Record<string, Job>>({});
   const [busy, setBusy] = useState<Record<string, boolean>>({});
@@ -60,6 +61,10 @@ export default function Admin() {
         setPassword(pass);
         setAuthed(true);
         store(PASS_KEY, pass);
+        setCheck({ ok: false, message: "Checking your OpenAI connection…" });
+        call("/api/admin/check", {}, pass)
+          .then(setCheck)
+          .catch((e) => setCheck({ ok: false, message: (e as Error).message }));
       } catch (e) {
         setError((e as Error).message);
         setAuthed(false);
@@ -166,6 +171,13 @@ export default function Admin() {
 
   return (
     <>
+      {check && (
+        <p className="notice">
+          <strong>OpenAI: </strong>
+          {check.message}
+          {check.keyHint && <span className="sub"> (key {check.keyHint})</span>}
+        </p>
+      )}
       {setupProblem && <p className="notice">{setupProblem}</p>}
       {error && error !== setupProblem && <p className="notice">{error}</p>}
 
