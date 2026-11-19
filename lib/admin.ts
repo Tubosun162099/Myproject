@@ -17,7 +17,7 @@ export const deny = () => Response.json({ error: "Wrong admin password." }, { st
 export function setupProblem(): string | null {
   if (!process.env.ADMIN_PASSWORD) return "ADMIN_PASSWORD is not set in Vercel.";
   if (!process.env.OPENAI_API_KEY) return "OPENAI_API_KEY is not set in Vercel.";
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return "Video storage (Vercel Blob) is not connected.";
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return "Video storage (Vercel Blob) is not connected yet. You can generate and preview videos, but Approve won't work until it is.";
   return null;
 }
 

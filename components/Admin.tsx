@@ -166,7 +166,7 @@ export default function Admin() {
 
   return (
     <>
-      {setupProblem && <p className="notice">Not ready to generate: {setupProblem}</p>}
+      {setupProblem && <p className="notice">{setupProblem}</p>}
       {error && error !== setupProblem && <p className="notice">{error}</p>}
 
       <div className="tabs" role="tablist">
