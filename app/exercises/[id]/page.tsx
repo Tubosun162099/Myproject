@@ -5,6 +5,7 @@ import {
   BackLink, EquipmentRow, Footnote, MuscleSection, NoEquipmentRow, Video,
 } from "@/components/ui";
 import { equipmentList, exercises, getExercise, programs } from "@/lib/data";
+import { getVideo } from "@/lib/videos";
 
 export const generateStaticParams = () => exercises.map((e) => ({ id: e.id }));
 
@@ -29,6 +30,7 @@ export default async function ExercisePage({
   const needs = equipmentList(exercise.equipment);
   const swaps = equipmentList(exercise.alternatives);
   const noKit = needs.length === 0;
+  const video = (await getVideo("exercise", exercise.id)) ?? exercise.video;
 
   return (
     <main className="page">
@@ -39,7 +41,7 @@ export default async function ExercisePage({
       <h1>{exercise.name}</h1>
       <p className="lede">{exercise.summary}</p>
 
-      <Video src={exercise.video} name={exercise.name} />
+      <Video src={video} name={exercise.name} />
 
       <MuscleSection primary={exercise.primary} secondary={exercise.secondary} />
 

@@ -68,7 +68,7 @@ export function Video({ src, name }: { src?: string; name: string }) {
   return (
     <div className="video">
       {src ? (
-        <video src={src} controls playsInline loop muted preload="metadata" aria-label={`${name} demo`} />
+        <video src={src} controls autoPlay playsInline loop muted preload="metadata" aria-label={`${name} demo`} />
       ) : (
         <div className="video-empty">
           <div className="play" aria-hidden="true">

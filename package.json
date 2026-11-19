@@ -11,10 +11,13 @@
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
+    "@vercel/blob": "^2.9.0",
     "lucide-react": "^1.76.0",
     "next": "^16.4.6",
+    "openai": "^7.60.0",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",

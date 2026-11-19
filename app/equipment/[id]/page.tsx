@@ -5,6 +5,9 @@ import { BackLink, ExerciseRow, Footnote, MuscleSection, Video } from "@/compone
 import {
   equipment, exercisesForEquipment, getEquipment, musclesForEquipment, programsForEquipment,
 } from "@/lib/data";
+import { getVideo } from "@/lib/videos";
+
+export const revalidate = 60;
 
 export const generateStaticParams = () => equipment.map((e) => ({ id: e.id }));
 
@@ -20,6 +23,7 @@ export default async function EquipmentPage({ params }: { params: Promise<{ id: 
   const { main, alternative } = exercisesForEquipment(item.id);
   const muscles = musclesForEquipment(item.id);
   const usedIn = programsForEquipment(item.id);
+  const video = (await getVideo("equipment", item.id)) ?? item.video;
 
   return (
     <main className="page">
@@ -28,7 +32,7 @@ export default async function EquipmentPage({ params }: { params: Promise<{ id: 
       <h1>{item.name}</h1>
       <p className="lede">{item.summary}</p>
 
-      <Video src={item.video} name={item.name} />
+      <Video src={video} name={item.name} />
 
       {usedIn.length > 0 && (
         <section className="section">

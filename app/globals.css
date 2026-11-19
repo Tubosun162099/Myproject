@@ -380,3 +380,75 @@ a.chip:hover { background: var(--surface-hover); }
   .program-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .body-map--large .body-figure svg { width: 132px; }
 }
+
+/* ---------- Buttons & admin ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { background: var(--surface-soft); }
+.btn:disabled { opacity: 0.5; cursor: default; }
+.btn--ink { background: var(--ink); color: var(--ink-text); border-color: var(--ink); }
+.btn--ink:hover { background: var(--ink); opacity: 0.9; }
+.btn--icon { width: 40px; padding: 0; }
+
+.admin-login { display: grid; gap: 10px; }
+.notice {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  margin: 0 0 14px;
+}
+
+.tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.tab[aria-selected="true"] { background: var(--ink); color: var(--ink-text); border-color: var(--ink); }
+.tab-count { font-weight: 500; opacity: 0.6; font-size: 13px; }
+
+.check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-muted); margin-bottom: 14px; }
+.check input { width: 18px; height: 18px; accent-color: var(--ink); }
+
+.admin-item {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.admin-head { display: flex; align-items: center; gap: 8px; }
+.admin-head .text { flex: 1; min-width: 0; }
+.admin-item .title { font-weight: 600; letter-spacing: -0.015em; }
+.admin-item .sub { color: var(--text-muted); font-size: 14px; margin: 0; }
+.admin-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+.bar { height: 4px; border-radius: 999px; background: var(--surface-hover); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--ink); transition: width 0.4s; }
+
+.spin { animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
