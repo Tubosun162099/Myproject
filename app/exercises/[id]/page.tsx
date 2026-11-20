@@ -1,8 +1,7 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AlertTriangle, Check } from "lucide-react";
 import {
-  BackLink, EquipmentRow, Footnote, MuscleSection, NoEquipmentRow, Video,
+  BackLink, Callout, EquipmentRow, Footnote, MuscleSection, NoEquipmentRow, ProgramTag, Video,
 } from "@/components/ui";
 import { equipmentList, exercises, getExercise, programs } from "@/lib/data";
 import { getVideo } from "@/lib/videos";
@@ -40,6 +39,10 @@ export default async function ExercisePage({
 
       <h1>{exercise.name}</h1>
       <p className="lede">{exercise.summary}</p>
+      <div className="chips title-tags">
+        {inPrograms.map((p) => <ProgramTag key={p.id} program={p} />)}
+        {noKit && <span className="tag accent-gray">No equipment</span>}
+      </div>
 
       <Video src={video} name={exercise.name} />
 
@@ -70,29 +73,19 @@ export default async function ExercisePage({
 
       <section className="section">
         <h2 className="section-title">Avoid these mistakes</h2>
-        <ul className="bullets">
-          {exercise.mistakes.map((m, i) => (
-            <li key={i}><AlertTriangle size={16} aria-hidden="true" />{m}</li>
-          ))}
-        </ul>
+        <Callout tone="red" icon={<AlertTriangle size={16} />} items={exercise.mistakes} />
       </section>
 
       <section className="section">
         <h2 className="section-title">Why it helps</h2>
-        <ul className="bullets">
-          {exercise.benefits.map((b, i) => (
-            <li key={i}><Check size={16} aria-hidden="true" />{b}</li>
-          ))}
-        </ul>
+        <Callout tone="green" icon={<Check size={16} />} items={exercise.benefits} />
       </section>
 
       {inPrograms.length > 0 && (
         <section className="section">
           <h2 className="section-title">Part of</h2>
           <div className="chips">
-            {inPrograms.map((p) => (
-              <Link key={p.id} href={`/programs/${p.id}`} className="chip">{p.name}</Link>
-            ))}
+            {inPrograms.map((p) => <ProgramTag key={p.id} program={p} />)}
           </div>
         </section>
       )}

@@ -45,9 +45,13 @@ export type Exercise = {
   video?: string;
 };
 
+export type Accent = "blue" | "red" | "green" | "purple" | "orange" | "yellow" | "pink" | "gray";
+
 export type Program = {
   id: string;
   name: string;
+  /** Soft Notion-style colour used to tint this workout's cards and tags. */
+  accent: Accent;
   summary: string;
   /** Muscles shown on the program's body map. */
   muscles: MuscleId[];

@@ -1,6 +1,6 @@
 import { equipment } from "./equipment";
 import { exercises } from "./exercises";
-import type { Equipment, Exercise, MuscleId, Program } from "./types";
+import type { Accent, Equipment, Exercise, MuscleId, Program } from "./types";
 
 export { equipment, exercises };
 
@@ -26,6 +26,7 @@ export const muscleNames: Record<MuscleId, string> = {
 export const programs: Program[] = [
   {
     id: "legs",
+    accent: "blue",
     name: "Leg Day",
     summary: "Thighs, glutes and calves.",
     muscles: ["quads", "hamstrings", "glutes", "adductors", "calves"],
@@ -38,6 +39,7 @@ export const programs: Program[] = [
   },
   {
     id: "chest",
+    accent: "red",
     name: "Chest Day",
     summary: "Chest, with some shoulders and triceps.",
     muscles: ["chest"],
@@ -48,6 +50,7 @@ export const programs: Program[] = [
   },
   {
     id: "back",
+    accent: "green",
     name: "Back Day",
     summary: "Upper, middle and lower back.",
     muscles: ["lats", "upper-back", "lower-back", "traps"],
@@ -58,6 +61,7 @@ export const programs: Program[] = [
   },
   {
     id: "arms",
+    accent: "purple",
     name: "Arm Day",
     summary: "Biceps, triceps and forearms.",
     muscles: ["biceps", "triceps", "forearms"],
@@ -68,6 +72,7 @@ export const programs: Program[] = [
   },
   {
     id: "shoulders",
+    accent: "orange",
     name: "Shoulders",
     summary: "Front, side and back of the shoulders, plus traps.",
     muscles: ["shoulders", "traps"],
@@ -78,6 +83,7 @@ export const programs: Program[] = [
   },
   {
     id: "core",
+    accent: "yellow",
     name: "Abs & Core",
     summary: "Stomach, sides and lower back.",
     muscles: ["abs", "obliques", "lower-back"],
@@ -88,6 +94,7 @@ export const programs: Program[] = [
   },
   {
     id: "full-body",
+    accent: "pink",
     name: "Full Body",
     summary: "A bit of everything in one session.",
     muscles: ["quads", "glutes", "hamstrings", "chest", "lats", "upper-back", "shoulders", "abs"],
@@ -138,3 +145,7 @@ export const musclesForEquipment = (equipmentId: string) => {
 
 export const muscleLabel = (ids: MuscleId[]) =>
   ids.map((m) => muscleNames[m].replace(/ \(.*\)$/, "")).join(", ");
+
+/** The accent of the first workout an exercise belongs to, for tinting it outside a workout. */
+export const exerciseAccent = (exerciseId: string): Accent =>
+  programs.find((p) => p.exercises.includes(exerciseId))?.accent ?? "gray";

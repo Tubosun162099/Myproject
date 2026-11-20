@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
-import { BackLink, ExerciseRow, Footnote, MuscleSection, Video } from "@/components/ui";
+import { BackLink, Callout, ExerciseRow, Footnote, MuscleSection, ProgramTag, Video } from "@/components/ui";
 import {
   equipment, exercisesForEquipment, getEquipment, musclesForEquipment, programsForEquipment,
 } from "@/lib/data";
@@ -38,9 +37,7 @@ export default async function EquipmentPage({ params }: { params: Promise<{ id: 
         <section className="section">
           <h2 className="section-title">Used for</h2>
           <div className="chips">
-            {usedIn.map((p) => (
-              <Link key={p.id} href={`/programs/${p.id}`} className="chip">{p.name}</Link>
-            ))}
+            {usedIn.map((p) => <ProgramTag key={p.id} program={p} />)}
           </div>
         </section>
       )}
@@ -58,11 +55,7 @@ export default async function EquipmentPage({ params }: { params: Promise<{ id: 
 
       <section className="section">
         <h2 className="section-title">Stay safe</h2>
-        <ul className="bullets">
-          {item.safety.map((s, i) => (
-            <li key={i}><ShieldCheck size={16} aria-hidden="true" />{s}</li>
-          ))}
-        </ul>
+        <Callout tone="yellow" icon={<ShieldCheck size={16} />} items={item.safety} />
       </section>
 
       {main.length > 0 && (

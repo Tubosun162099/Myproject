@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, Dumbbell, Play, User } from "lucide-react";
 import BodyMap from "./BodyMap";
-import { equipmentList, muscleLabel, muscleNames } from "@/lib/data";
-import type { Equipment, Exercise, MuscleId } from "@/lib/types";
+import { equipmentList, exerciseAccent, getProgram, muscleLabel, muscleNames } from "@/lib/data";
+import type { Accent, Equipment, Exercise, MuscleId, Program } from "@/lib/types";
 
 export function BackLink({ href, label }: { href: string; label: string }) {
   return (
@@ -20,8 +20,9 @@ export function equipmentText(e: Exercise) {
 
 export function ExerciseRow({ exercise, from }: { exercise: Exercise; from?: string }) {
   const href = `/exercises/${exercise.id}${from ? `?from=${from}` : ""}`;
+  const accent = (from && getProgram(from)?.accent) || exerciseAccent(exercise.id);
   return (
-    <Link href={href} className="row">
+    <Link href={href} className={`row accent-${accent}`}>
       <div className="row-mini-map" aria-hidden="true">
         <BodyMap primary={exercise.primary} size="small" />
       </div>
@@ -124,5 +125,34 @@ export function Footnote() {
     <p className="footnote">
       General guidance, not medical advice. Stop if anything hurts.
     </p>
+  );
+}
+
+export function ProgramTag({ program }: { program: Program }) {
+  return (
+    <Link href={`/programs/${program.id}`} className={`tag accent-${program.accent}`}>
+      {program.name}
+    </Link>
+  );
+}
+
+export function Callout({
+  tone,
+  icon,
+  items,
+}: {
+  tone: Accent;
+  icon: React.ReactNode;
+  items: string[];
+}) {
+  return (
+    <ul className={`callout accent-${tone}`}>
+      {items.map((t, i) => (
+        <li key={i}>
+          <span className="callout-icon" aria-hidden="true">{icon}</span>
+          {t}
+        </li>
+      ))}
+    </ul>
   );
 }

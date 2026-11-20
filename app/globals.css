@@ -452,3 +452,94 @@ a.chip:hover { background: var(--surface-hover); }
 
 .spin { animation: spin 0.9s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Accents (Notion-style, soft) ---------- */
+:root {
+  --gray-bg: #f1f1ef;   --gray-tx: #787774;
+  --blue-bg: #e9f3f7;   --blue-tx: #3f739b;
+  --red-bg: #fbeceb;    --red-tx: #b4504a;
+  --green-bg: #edf3ec;  --green-tx: #4c7a5c;
+  --purple-bg: #f4f0f7; --purple-tx: #7d5ea0;
+  --orange-bg: #fbeee2; --orange-tx: #b46c30;
+  --yellow-bg: #fbf4de; --yellow-tx: #9c7a2c;
+  --pink-bg: #fbf0f4;   --pink-tx: #a44d7c;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --gray-bg: #262626;   --gray-tx: #9b9b9b;
+    --blue-bg: #17262f;   --blue-tx: #7fa9d3;
+    --red-bg: #2e1d1c;    --red-tx: #e07a72;
+    --green-bg: #1b2a22;  --green-tx: #6fb08a;
+    --purple-bg: #261f2f; --purple-tx: #ad8ad6;
+    --orange-bg: #2e2219; --orange-tx: #d99360;
+    --yellow-bg: #2c2618; --yellow-tx: #d1ab5e;
+    --pink-bg: #2d1d25;   --pink-tx: #d27aa6;
+  }
+}
+.accent-gray   { --accent-bg: var(--gray-bg);   --accent-tx: var(--gray-tx); }
+.accent-blue   { --accent-bg: var(--blue-bg);   --accent-tx: var(--blue-tx); }
+.accent-red    { --accent-bg: var(--red-bg);    --accent-tx: var(--red-tx); }
+.accent-green  { --accent-bg: var(--green-bg);  --accent-tx: var(--green-tx); }
+.accent-purple { --accent-bg: var(--purple-bg); --accent-tx: var(--purple-tx); }
+.accent-orange { --accent-bg: var(--orange-bg); --accent-tx: var(--orange-tx); }
+.accent-yellow { --accent-bg: var(--yellow-bg); --accent-tx: var(--yellow-tx); }
+.accent-pink   { --accent-bg: var(--pink-bg);   --accent-tx: var(--pink-tx); }
+
+/* Tinted figure backgrounds: the body turns white so it reads crisply on the tint. */
+.program-card[class*="accent-"] .thumb,
+.row[class*="accent-"] .row-mini-map,
+.program-hero {
+  --body: var(--surface);
+}
+.program-card[class*="accent-"] .thumb { background: var(--accent-bg); border-bottom-color: transparent; }
+.program-card[class*="accent-"]:hover .thumb { background: var(--accent-bg); filter: saturate(1.25); }
+.program-card .meta { color: var(--accent-tx, var(--text-muted)); font-weight: 500; }
+.row[class*="accent-"] .row-mini-map { background: var(--accent-bg); }
+
+.program-hero {
+  display: inline-grid;
+  place-items: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
+  background: var(--accent-bg);
+  margin-top: 4px;
+}
+.program-hero .body-map--small .body-figure svg { width: 28px; }
+
+/* Tags: Notion's coloured labels */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 9px;
+  border-radius: 6px;
+  background: var(--accent-bg);
+  color: var(--accent-tx);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+a.tag:hover { filter: brightness(0.97) saturate(1.2); }
+.title-tags { margin: -10px 0 22px; }
+
+/* Callouts: soft tinted boxes with a coloured icon */
+.callout {
+  list-style: none;
+  margin: 0;
+  padding: 14px 16px;
+  display: grid;
+  gap: 10px;
+  border-radius: var(--radius);
+  background: var(--accent-bg);
+}
+.callout li { display: grid; grid-template-columns: 20px 1fr; gap: 10px; align-items: start; line-height: 1.45; }
+.callout-icon { color: var(--accent-tx); display: inline-flex; margin-top: 2px; }
+@media (prefers-color-scheme: dark) {
+  .program-card[class*="accent-"] .thumb,
+  .row[class*="accent-"] .row-mini-map,
+  .program-hero {
+    --body: rgba(255, 255, 255, 0.09);
+    --muscle-base: rgba(255, 255, 255, 0.17);
+  }
+}

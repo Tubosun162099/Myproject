@@ -78,7 +78,7 @@ function ProgramGrid({ list }: { list: typeof programs }) {
   return (
     <div className="program-grid">
       {list.map((p) => (
-        <Link key={p.id} href={`/programs/${p.id}`} className="program-card">
+        <Link key={p.id} href={`/programs/${p.id}`} className={`program-card accent-${p.accent}`}>
           <div className="thumb" aria-hidden="true">
             <BodyMap primary={p.muscles} size="small" />
           </div>
